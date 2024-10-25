@@ -18,4 +18,7 @@ export class CommonUtils {
   //     return null;
   //   }
   // }
+  static getUser() {
+    return false;
+  }
 }

@@ -5,6 +5,7 @@ import "@/index.css";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "@/theme.ts";
 import "@/i18n";
+import "@/font-awesome";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

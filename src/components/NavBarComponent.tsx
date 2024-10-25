@@ -1,3 +1,4 @@
+import { CommonUtils } from "@/utils/common.utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   AppBar,
@@ -12,11 +13,14 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 const NavBarComponent: React.FC = () => {
   const { t } = useTranslation();
+
+  const [user, setUser] = useState<boolean>(CommonUtils.getUser());
 
   const pages = [t("navBar.challenges")];
   const settings = ["Profile", "Account", "Dashboard", "Logout"];
@@ -25,12 +29,12 @@ const NavBarComponent: React.FC = () => {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <FontAwesomeIcon icon={["fas", "flag"]} />
+          <FontAwesomeIcon icon="flag" />
           <Typography
             variant="h6"
             noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
+            component={RouterLink}
+            to="/"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -52,7 +56,7 @@ const NavBarComponent: React.FC = () => {
               aria-haspopup="true"
               color="inherit"
             >
-              <FontAwesomeIcon icon={["fas", "bars"]} />
+              <FontAwesomeIcon icon="bars" />
             </IconButton>
             <Menu
               id="menu-appbar"
@@ -75,7 +79,7 @@ const NavBarComponent: React.FC = () => {
               ))}
             </Menu>
           </Box>
-          <FontAwesomeIcon icon={["fas", "flag"]} />
+          <FontAwesomeIcon icon="flag" />
           <Typography
             variant="h5"
             noWrap
@@ -105,11 +109,23 @@ const NavBarComponent: React.FC = () => {
             ))}
           </Box>
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
+            {user ? (
+              <Tooltip title="Open profile">
+                <IconButton sx={{ p: 0 }}>
+                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <Button
+                component={RouterLink}
+                to="/auth/login"
+                color="secondary"
+                variant="contained"
+              >
+                {t("auth.login")}
+              </Button>
+            )}
+
             <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"
