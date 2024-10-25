@@ -1,0 +1,12 @@
+{
+    "common": {
+        
+    },
+    "navBar": {
+        "challenges": "Thử thách"
+    },
+    "auth": {
+        "login": "Đăng nhập",
+        "forgotPassword": "Quên mật khẩu?"
+    }
+}

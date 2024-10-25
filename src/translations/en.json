@@ -1,0 +1,12 @@
+{
+    "common": {
+        
+    },
+    "navBar": {
+        "challenges": "Challenges"
+    },
+    "auth": {
+        "login": "Login",
+        "forgotPassword": "Forgot Password?"
+    }
+}
