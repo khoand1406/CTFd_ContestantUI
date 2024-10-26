@@ -1,7 +1,12 @@
 import React from "react";
+import NavBarComponent from "./NavBarComponent";
 
 const HeaderComponent = () => {
-  return <div>HeaderComponent</div>;
+  return (
+    <header>
+      <NavBarComponent />
+    </header>
+  );
 };
 
 export default HeaderComponent;
