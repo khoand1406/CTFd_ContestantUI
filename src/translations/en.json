@@ -8,5 +8,8 @@
     "auth": {
         "login": "Login",
         "forgotPassword": "Forgot Password?"
+    },
+    "error": {
+        "loginFailed": "Incorrect username or password"
     }
 }

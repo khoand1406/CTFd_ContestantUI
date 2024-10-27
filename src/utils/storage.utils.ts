@@ -4,6 +4,8 @@ export class StorageUtils {
   static key = import.meta.env.APP_ENCRYPTION_KEY as string;
 
   static encrypt(value: string) {
+    if (this.key === null)
+      throw new Error("Missing encryption key for storage actions");
     return Crypto.AES.encrypt(value, this.key).toString();
   }
 

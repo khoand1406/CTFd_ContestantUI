@@ -18,7 +18,9 @@ export class CommonUtils {
   //     return null;
   //   }
   // }
-  static getUser() {
-    return false;
+  static isLoggedIn() {
+    const token = StorageUtils.getItem("userInfo", "local") as string;
+    console.log(token);
+    return token ? true : false;
   }
 }

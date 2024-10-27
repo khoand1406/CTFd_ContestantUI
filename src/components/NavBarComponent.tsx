@@ -16,13 +16,21 @@ import {
 import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { ROUTE_CHALLENGES, ROUTE_LOGIN, ROUTE_ROOT } from "@/constants/routes";
 
 const NavBarComponent: React.FC = () => {
   const { t } = useTranslation();
 
-  const [user, setUser] = useState<boolean>(CommonUtils.getUser());
+  const [user, setUser] = useState<boolean>(CommonUtils.isLoggedIn());
 
-  const pages = [t("navBar.challenges")];
+  interface PageLink {
+    pageName: string;
+    dstURL: string;
+  }
+
+  const pages: Array<PageLink> = [
+    { pageName: t("navBar.challenges"), dstURL: ROUTE_CHALLENGES },
+  ];
   const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
   return (
@@ -34,7 +42,7 @@ const NavBarComponent: React.FC = () => {
             variant="h6"
             noWrap
             component={RouterLink}
-            to="/"
+            to={ROUTE_ROOT}
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -73,8 +81,14 @@ const NavBarComponent: React.FC = () => {
               sx={{ display: { xs: "block", md: "none" } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page}>
-                  <Typography sx={{ textAlign: "center" }}>{page}</Typography>
+                <MenuItem
+                  component={RouterLink}
+                  to={page.dstURL}
+                  key={page.pageName}
+                >
+                  <Typography sx={{ textAlign: "center" }}>
+                    {page.pageName}
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -101,10 +115,12 @@ const NavBarComponent: React.FC = () => {
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
-                key={page}
+                component={RouterLink}
+                to={page.dstURL}
+                key={page.pageName}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
-                {page}
+                {page.pageName}
               </Button>
             ))}
           </Box>
@@ -118,7 +134,7 @@ const NavBarComponent: React.FC = () => {
             ) : (
               <Button
                 component={RouterLink}
-                to="/auth/login"
+                to={ROUTE_LOGIN}
                 color="secondary"
                 variant="contained"
               >

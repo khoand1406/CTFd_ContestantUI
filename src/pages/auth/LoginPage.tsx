@@ -1,6 +1,8 @@
 import { API_R_200 } from "@/constants/res-codes";
-import { IUserLoginRequest } from "@/interfaces/auth";
+import { ROUTE_ROOT } from "@/constants/routes";
+import { IUserLoginRequest, IUserLoginResponse } from "@/interfaces/auth";
 import { AuthService } from "@/services/auth.service";
+import { CommonUtils } from "@/utils/common.utils";
 import { StorageUtils } from "@/utils/storage.utils";
 import {
   Box,
@@ -12,6 +14,7 @@ import {
   Typography,
   Link,
   Fade,
+  Alert,
 } from "@mui/material";
 import { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
@@ -23,6 +26,8 @@ const LoginPage = () => {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const [isLoginError, setLoginError] = useState<boolean>(false);
 
   const handleUsernameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
@@ -39,13 +44,13 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const checkIfTheresUser = () => {
-    const user = null;
-    if (user != null) {
-      navigate("/");
+    if (CommonUtils.isLoggedIn()) {
+      navigate(ROUTE_ROOT);
     }
   };
 
   const onLogin = async () => {
+    setLoginError(false);
     const payload: IUserLoginRequest = {
       username: username,
       password: password,
@@ -54,13 +59,16 @@ const LoginPage = () => {
     const response = (await AuthService.login(payload)) as AxiosResponse;
 
     if (response.status === API_R_200) {
+      const data = response!.data as IUserLoginResponse;
       StorageUtils.setItem(
-        "tokenInfo",
-        JSON.stringify(response!.data.data),
-        "session"
+        "userInfo",
+        JSON.stringify(data.generatedToken),
+        "local"
       );
       console.log("login success!");
-      navigate("/");
+      window.location.reload();
+    } else {
+      setLoginError(true);
     }
   };
 
@@ -86,6 +94,13 @@ const LoginPage = () => {
                 >
                   {t("auth.login")}
                 </Typography>
+                {isLoginError ? (
+                  <Alert sx={{ my: 2 }} severity="error">
+                    {t("error.loginFailed")}
+                  </Alert>
+                ) : (
+                  <></>
+                )}
                 <Box>
                   <TextField
                     type="text"
