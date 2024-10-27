@@ -34,7 +34,7 @@ const NavBarComponent: React.FC = () => {
   const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
   return (
-    <AppBar position="static">
+    <AppBar position="fixed">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <FontAwesomeIcon icon="flag" />

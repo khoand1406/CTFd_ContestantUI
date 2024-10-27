@@ -10,7 +10,9 @@ const MainLayout = () => {
     <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
       <HeaderComponent />
       <main>
-        <Outlet />
+        <Box sx={{ mt: 8 }}>
+          <Outlet />
+        </Box>
       </main>
       <FooterComponent />
     </Box>

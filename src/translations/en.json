@@ -9,6 +9,14 @@
         "login": "Login",
         "forgotPassword": "Forgot Password?"
     },
+    "challengeTopics": {
+        "title": "Challenge Topics"
+    },
+    "challengeTopicDetails": {
+        "startChallenge": "Start Challenge",
+        "enterFlag": "Enter your flag",
+        "submit": "Submit Flag"
+    },
     "error": {
         "loginFailed": "Incorrect username or password"
     }
