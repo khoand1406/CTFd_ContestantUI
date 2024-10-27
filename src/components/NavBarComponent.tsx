@@ -16,7 +16,15 @@ import {
 import React, { useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { ROUTE_CHALLENGES, ROUTE_LOGIN, ROUTE_ROOT } from "@/constants/routes";
+import {
+  ROUTE_CHALLENGES,
+  ROUTE_LOGIN,
+  ROUTE_LOGOUT,
+  ROUTE_PROFILE,
+  ROUTE_ROOT,
+  ROUTE_SCOREBOARD,
+  ROUTE_TICKETS,
+} from "@/constants/routes";
 
 const NavBarComponent: React.FC = () => {
   const { t } = useTranslation();
@@ -30,8 +38,23 @@ const NavBarComponent: React.FC = () => {
 
   const pages: Array<PageLink> = [
     { pageName: t("navBar.challenges"), dstURL: ROUTE_CHALLENGES },
+    { pageName: t("navBar.scoreboard"), dstURL: ROUTE_SCOREBOARD },
+    { pageName: t("navBar.tickets"), dstURL: ROUTE_TICKETS },
   ];
-  const settings = ["Profile", "Account", "Dashboard", "Logout"];
+
+  const userMenus: Array<PageLink> = [
+    { pageName: t("navBar.userMenus.profile"), dstURL: ROUTE_PROFILE },
+    { pageName: t("navBar.userMenus.logout"), dstURL: ROUTE_LOGOUT },
+  ];
+
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <AppBar position="fixed">
@@ -126,11 +149,36 @@ const NavBarComponent: React.FC = () => {
           </Box>
           <Box sx={{ flexGrow: 0 }}>
             {user ? (
-              <Tooltip title="Open profile">
-                <IconButton sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-                </IconButton>
-              </Tooltip>
+              <>
+                <Typography
+                  aria-controls={open ? "basic-menu" : undefined}
+                  aria-haspopup="true"
+                  aria-expanded={open ? "true" : undefined}
+                  sx={{ cursor: "pointer" }}
+                  onClick={handleClick}
+                >
+                  Welcome, user!
+                </Typography>
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleClose}
+                  MenuListProps={{
+                    "aria-labelledby": "basic-button",
+                  }}
+                >
+                  {userMenus.map((m) => (
+                    <MenuItem
+                      component={RouterLink}
+                      to={m.dstURL}
+                      onClick={handleClose}
+                    >
+                      {m.pageName}
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </>
             ) : (
               <Button
                 component={RouterLink}
@@ -141,29 +189,6 @@ const NavBarComponent: React.FC = () => {
                 {t("auth.login")}
               </Button>
             )}
-
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              open={false}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting}>
-                  <Typography sx={{ textAlign: "center" }}>
-                    {setting}
-                  </Typography>
-                </MenuItem>
-              ))}
-            </Menu>
           </Box>
         </Toolbar>
       </Container>

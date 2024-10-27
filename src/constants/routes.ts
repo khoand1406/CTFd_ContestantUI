@@ -1,4 +1,10 @@
 export const ROUTE_LOGIN = "/login";
+export const ROUTE_LOGOUT = "/logout";
 export const ROUTE_CHALLENGES = "/challenges";
 export const ROUTE_CHALLENGE_TOPIC = "/challenges/:topic";
 export const ROUTE_ROOT = "/";
+export const ROUTE_SCOREBOARD = "/scoreboard";
+export const ROUTE_PROFILE = "/profile";
+export const ROUTE_TICKETS = "/tickets";
+export const ROUTE_TICKET_DETAIL = "/tickets/:id";
+export const ROUTE_TICKET_SUBMIT = "/tickets/add";

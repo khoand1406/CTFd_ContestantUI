@@ -12,3 +12,8 @@ export interface IUserLoginResponse {
     username: string;
   };
 }
+
+export interface IUserChangePasswordRequest {
+  current_password: string;
+  new_password: string;
+}

@@ -1,5 +1,6 @@
 import { API_R_200 } from "@/constants/res-codes";
 import { ROUTE_ROOT } from "@/constants/routes";
+import { KEY_USERINFO } from "@/constants/storage-keys";
 import { IUserLoginRequest, IUserLoginResponse } from "@/interfaces/auth";
 import { AuthService } from "@/services/auth.service";
 import { CommonUtils } from "@/utils/common.utils";
@@ -61,7 +62,7 @@ const LoginPage = () => {
     if (response.status === API_R_200) {
       const data = response!.data as IUserLoginResponse;
       StorageUtils.setItem(
-        "userInfo",
+        KEY_USERINFO,
         JSON.stringify(data.generatedToken),
         "local"
       );

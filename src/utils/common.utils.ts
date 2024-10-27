@@ -1,5 +1,5 @@
-import { jwtDecode } from "jwt-decode";
 import { StorageUtils } from "@/utils/storage.utils";
+import { KEY_USERINFO } from "@/constants/storage-keys";
 // import type { ITokenInfo } from "../interfaces/Account";
 // import type { ITokenPayload } from "../interfaces/JWT";
 
@@ -19,7 +19,7 @@ export class CommonUtils {
   //   }
   // }
   static isLoggedIn() {
-    const token = StorageUtils.getItem("userInfo", "local") as string;
+    const token = StorageUtils.getItem(KEY_USERINFO, "local") as string;
     console.log(token);
     return token ? true : false;
   }

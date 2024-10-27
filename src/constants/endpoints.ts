@@ -5,6 +5,7 @@ export const API_ENV = {
 
 // AUTH RELATED
 export const API_USER_LOG_IN = "/login-contestant"; // post
+export const API_USER_CHANGE_PASSWORD = "/changepassword"; // post
 //
 
 // CHALLENGE RELATED
