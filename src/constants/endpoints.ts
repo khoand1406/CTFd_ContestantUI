@@ -12,3 +12,8 @@ export const API_USER_CHANGE_PASSWORD = "/changepassword"; // post
 export const API_CHALLENGE_GET_TOPICS = "/topics"; // get
 export const API_CHALLENGE_GET_LIST = "/challenges"; // get
 export const API_CHALLENGE_SUBMISSION = "/submission"; // post
+
+// TICKET RELATED
+export const API_TICKET_SUBMIT = "/ticket"; // post
+export const API_TICKET_LIST = "/tickets"; // get
+export const API_TICKET_DETAIL = "/ticket/"; // get
