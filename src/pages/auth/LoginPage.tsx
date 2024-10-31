@@ -61,11 +61,7 @@ const LoginPage = () => {
 
     if (response.status === API_R_200) {
       const data = response!.data as IUserLoginResponse;
-      StorageUtils.setItem(
-        KEY_USERINFO,
-        JSON.stringify(data.generatedToken),
-        "local"
-      );
+      StorageUtils.setItem(KEY_USERINFO, JSON.stringify(data), "local");
       console.log("login success!");
       window.location.reload();
     } else {
