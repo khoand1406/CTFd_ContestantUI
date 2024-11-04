@@ -35,7 +35,7 @@ export interface IChallengeListResponse {
 
 export interface IChallengeStartRequest {
   challenge_id: number;
-  team_id: number;
+  generatedToken: string;
 }
 
 export interface IChallengeByCategoryRequest {
