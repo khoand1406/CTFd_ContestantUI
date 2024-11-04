@@ -58,22 +58,7 @@ const ChallengeTopicDetailsPage = () => {
     fetchChallenges();
   }, [topic]);
 
-  // Initialize socket connection
-  useEffect(() => {
-    const socket = io('http://127.0.0.1:4000');
-    socket.on('connect', () => {
-      console.log('Connected to the server!');
-    });
-    socket.emit('join_teams', { user_id: '123' });
-    socket.on('time_up', () => {
-      console.log('Time is up! Submitting exam...');
-    });
-
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
-
+ 
   return (
     <Box sx={{ height: "90vh" }}>
       <Grid2 container sx={{ height: "100%", width: "100%" }}>

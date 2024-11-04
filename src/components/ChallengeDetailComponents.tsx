@@ -1,17 +1,23 @@
 import { ChallengeService } from "@/services/challenges.service";
 import { Alert, Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+import { IChallenge } from "@/interfaces/challenges";
 import { useNavigate, useParams } from "react-router-dom";
+import { StorageUtils } from "@/utils/storage.utils";
+import { KEY_USERINFO } from "@/constants/storage-keys";
 
 const ChallengeDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const challengeId = id ? parseInt(id, 10) : undefined;
   const navigate = useNavigate();
 
-  const [challenge, setChallenge] = useState(null);
+  const [challenge, setChallenge] = useState<IChallenge | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isStartingInstance, setIsStartingInstance] = useState(false);
+  const tokenString = StorageUtils.getItem(KEY_USERINFO, "local") as string;
+  const token = JSON.parse(tokenString);
+
 
   useEffect(() => {
     const fetchChallengeDetails = async () => {
@@ -24,7 +30,7 @@ const ChallengeDetailsPage = () => {
 
         setIsLoading(true);
         const response = await ChallengeService.getChallengeDetails(challengeId);
-        
+
         if (response?.data.success) {
           setChallenge(response.data.data);
           setError(null);
@@ -45,8 +51,20 @@ const ChallengeDetailsPage = () => {
   const handleStartInstance = async () => {
     setIsStartingInstance(true);
     try {
-      const response = await ChallengeService.startChallenge;  //call api start 
-      if (response.data.success) {
+
+      if (!challengeId) {
+        setError("Invalid challenge ID.");
+        setIsStartingInstance(false);
+        return;
+      }
+
+      const response = await ChallengeService.startChallenge(
+        {
+          challenge_id: challengeId,
+          generatedToken: token.generatedToken,
+        }
+      );  //call api start 
+      if (response?.data.success) {
         console.log("Instance started:", response.data);
         // Navigate to instance or update state if needed
       } else {
@@ -81,17 +99,21 @@ const ChallengeDetailsPage = () => {
             {challenge.name}
           </Typography>
           <Typography variant="body1" paragraph>
-            {challenge.requirements}
+            {challenge.description}
           </Typography>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleStartInstance}
-            sx={{ mt: 3 }}
-            disabled={isStartingInstance}
-          >
-            {isStartingInstance ? "Starting..." : "Start Instance"}
-          </Button>
+          {challenge.require_deploy && (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleStartInstance}
+              sx={{ mt: 3 }}
+              disabled={isStartingInstance}
+            >
+              
+              {isStartingInstance ? "Starting..." : "Start Instance"}
+            </Button>
+           
+          )}
         </>
       ) : (
         <Typography variant="h5">Challenge not found</Typography>

@@ -66,6 +66,7 @@ export class ChallengeService extends BaseService {
         API_ENV.MAIN + API_CHALLENGE_START,
         req
       );
+      return response;
     } catch (error) {
       return (error as AxiosError).response;
     }

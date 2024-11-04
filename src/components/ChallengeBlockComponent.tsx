@@ -6,7 +6,7 @@ import {
   Card,
   CardContent,
   Divider,
-  Grid2,
+  Grid,
   Typography
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -27,7 +27,7 @@ const ChallengeBlockComponent: React.FC<Prop> = ({ challengeInfo }) => {
   };
   
   const [challengeList, setChallengeList] = useState<Array<IChallenge>>([]);
-   const [isChallengesLoaded, setIsChallengesLoaded] = useState<boolean>(true);
+  const [isChallengesLoaded, setIsChallengesLoaded] = useState<boolean>(true);
   const [isChallengeStarted, setIsChallengeStarted] = useState(false);
   const [timer, setTimer] = useState(600); 
 
@@ -68,8 +68,8 @@ const ChallengeBlockComponent: React.FC<Prop> = ({ challengeInfo }) => {
     <Box sx={{ p: 2 }}>
       <Card sx={{ mx: 4, my: 2, p: 3, borderRadius: 2, boxShadow: 3 }}>
         <CardContent>
-          <Grid2 container spacing={3}>
-            <Grid2 item xs={12} md={6}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
               <Typography
                 id={`${challengeInfo.id}-${challengeInfo.name}`}
                 variant="h4"
@@ -95,8 +95,8 @@ const ChallengeBlockComponent: React.FC<Prop> = ({ challengeInfo }) => {
                   {t("challengeTopicDetails.detail")}
                 </Button>
               </Box>
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
         </CardContent>
       </Card>
       <Divider sx={{ my: 4 }} />
