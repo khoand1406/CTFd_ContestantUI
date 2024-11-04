@@ -17,7 +17,6 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams, Link as RouterLink } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
-import io from 'socket.io-client';
 
 const ChallengeTopicDetailsPage = () => {
   const { topic } = useParams<{ topic: string }>();
@@ -37,7 +36,7 @@ const ChallengeTopicDetailsPage = () => {
         }
       } catch (error) {
         console.error('Error fetching challenges:', error);
-        setChallengeList([]);    
+        setChallengeList([]);
       } finally {
         setIsChallengesLoaded(true);
       }
@@ -45,21 +44,6 @@ const ChallengeTopicDetailsPage = () => {
 
     fetchChallenges();
   }, [topic]);
-
-  useEffect(() => {
-    const socket = io('http://127.0.0.1:4000'); 
-
-    socket.on('connect', () => {
-      console.log('Connected to the server!');
-    });
-    socket.emit('join_teams', { user_id: '123' });
-    socket.on('time_up', () => {
-      console.log('Time is up! Submitting exam...');
-    });
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
 
   return (
     <Box sx={{ height: "90vh" }}>
