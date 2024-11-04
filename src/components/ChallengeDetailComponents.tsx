@@ -54,7 +54,7 @@ const ChallengeDetailsPage = () => {
   const handleStartInstance = async () => {
     setIsStartingInstance(true);
     try {
-<<<<<<< HEAD
+
 
       if (!challengeId) {
         setError("Invalid challenge ID.");
@@ -69,10 +69,8 @@ const ChallengeDetailsPage = () => {
         }
       );  //call api start 
       if (response?.data.success) {
-=======
       const response = await ChallengeService.startChallenge;
       if (response.data.success) {
->>>>>>> f5f5106e7607b4c497f2d646fcd8ceaada6a338c
         console.log("Instance started:", response.data);
         // Navigate to instance or update state if needed
       } else {
