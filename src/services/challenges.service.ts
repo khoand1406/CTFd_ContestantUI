@@ -14,6 +14,9 @@ import { AxiosError } from "axios";
 
 
 export class ChallengeService extends BaseService {
+  static submitFlag(challengeId: number | undefined, flag: string) {
+    throw new Error("Method not implemented.");
+  }
  
   static async getChallengeDetails(id: number | undefined) {
       try{

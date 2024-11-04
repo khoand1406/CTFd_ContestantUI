@@ -1,5 +1,5 @@
 import { ChallengeService } from "@/services/challenges.service";
-import { Alert, Box, Button, CircularProgress, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { IChallenge } from "@/interfaces/challenges";
 import { useNavigate, useParams } from "react-router-dom";
@@ -15,9 +15,15 @@ const ChallengeDetailsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isStartingInstance, setIsStartingInstance] = useState(false);
+<<<<<<< HEAD
   const tokenString = StorageUtils.getItem(KEY_USERINFO, "local") as string;
   const token = JSON.parse(tokenString);
 
+=======
+  const [flag, setFlag] = useState("");
+  const [isSubmittingFlag, setIsSubmittingFlag] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+>>>>>>> f5f5106e7607b4c497f2d646fcd8ceaada6a338c
 
   useEffect(() => {
     const fetchChallengeDetails = async () => {
@@ -51,6 +57,7 @@ const ChallengeDetailsPage = () => {
   const handleStartInstance = async () => {
     setIsStartingInstance(true);
     try {
+<<<<<<< HEAD
 
       if (!challengeId) {
         setError("Invalid challenge ID.");
@@ -65,6 +72,10 @@ const ChallengeDetailsPage = () => {
         }
       );  //call api start 
       if (response?.data.success) {
+=======
+      const response = await ChallengeService.startChallenge;
+      if (response.data.success) {
+>>>>>>> f5f5106e7607b4c497f2d646fcd8ceaada6a338c
         console.log("Instance started:", response.data);
         // Navigate to instance or update state if needed
       } else {
@@ -75,6 +86,24 @@ const ChallengeDetailsPage = () => {
       console.error("Error starting instance:", error);
     } finally {
       setIsStartingInstance(false);
+    }
+  };
+
+  const handleSubmitFlag = async () => {
+    setIsSubmittingFlag(true);
+    setSubmissionError(null);
+    try {
+      const response = await ChallengeService.submitFlag(challengeId, flag);
+      if (response.data.success) {
+        alert("Flag submitted successfully!");
+      } else {
+        setSubmissionError("Incorrect flag. Please try again.");
+      }
+    } catch (error) {
+      setSubmissionError("Error submitting flag.");
+      console.error("Error submitting flag:", error);
+    } finally {
+      setIsSubmittingFlag(false);
     }
   };
 
@@ -101,6 +130,7 @@ const ChallengeDetailsPage = () => {
           <Typography variant="body1" paragraph>
             {challenge.description}
           </Typography>
+<<<<<<< HEAD
           {challenge.require_deploy && (
             <Button
               variant="contained"
@@ -114,6 +144,43 @@ const ChallengeDetailsPage = () => {
             </Button>
            
           )}
+=======
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleStartInstance}
+            sx={{ mt: 3 }}
+            disabled={isStartingInstance}
+          >
+            {isStartingInstance ? "Starting..." : "Start Instance"}
+          </Button>
+
+          {/* Flag Submission Section */}
+          <Box sx={{ mt: 4 }}>
+            <TextField
+              label="Enter Flag"
+              variant="outlined"
+              fullWidth
+              value={flag}
+              onChange={(e) => setFlag(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmitFlag}
+              disabled={isSubmittingFlag || !flag}
+              fullWidth
+            >
+              {isSubmittingFlag ? "Submitting..." : "Submit Flag"}
+            </Button>
+            {submissionError && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {submissionError}
+              </Alert>
+            )}
+          </Box>
+>>>>>>> f5f5106e7607b4c497f2d646fcd8ceaada6a338c
         </>
       ) : (
         <Typography variant="h5">Challenge not found</Typography>
