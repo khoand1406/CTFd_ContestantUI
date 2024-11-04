@@ -3,7 +3,6 @@ export interface IChallenge {
   name: string;
   category: string;
   description: string;
-  message: string | null;
   max_attempts: number;
   next_id: number | null;
   requirements: string | null;

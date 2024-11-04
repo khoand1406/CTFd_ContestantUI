@@ -1,54 +1,66 @@
 import ChallengeBlockComponent from "@/components/ChallengeBlockComponent";
-import { ROUTE_CHALLENGES } from "@/constants/routes";
 import { IChallenge } from "@/interfaces/challenges";
 import { ChallengeService } from "@/services/challenges.service";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Box,
-  CircularProgress,
-  Grid2,
-  IconButton,
-  List,
-  ListItem,
-  Slide,
-  Typography,
-} from "@mui/material";
-import { useState, useEffect } from "react";
+import { Box, CircularProgress, Grid as Grid2, List, ListItem } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams, Link as RouterLink } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import io from 'socket.io-client';
+
 
 const ChallengeTopicDetailsPage = () => {
   const { topic } = useParams<{ topic: string }>();
   const { t } = useTranslation();
-  const [challengeList, setChallengeList] = useState<Array<IChallenge>>([]);
-  const [isChallengesLoaded, setIsChallengesLoaded] = useState<boolean>(true);
 
+  const [challengeList, setChallengeList] = useState<Array<IChallenge>>([]);
+  const [topicList, setTopicList] = useState<{ topic_id: string; topic_name: string }[]>([]);
+  const [isChallengesLoaded, setIsChallengesLoaded] = useState(false);
+  const [isTopicsLoaded, setIsTopicsLoaded] = useState(false);
+  
+
+  // Fetch topics
+  useEffect(() => {
+    const fetchTopics = async () => {
+      try {
+        const response = await ChallengeService.getListOfTopic();
+        if (response?.data.success && Array.isArray(response.data.data)) {
+          setTopicList(response.data.data);
+        } else {
+          setTopicList([]);
+        }
+      } catch (error) {
+        console.error("Error fetching topics:", error);
+      } finally {
+        setIsTopicsLoaded(true);
+      }
+    };
+    fetchTopics();
+  }, []);
+
+  // Fetch challenges by category
   useEffect(() => {
     const fetchChallenges = async () => {
       try {
+        setIsChallengesLoaded(false);
         const response = await ChallengeService.listChallengesByCategory({ category: topic || '' });
-
         if (response?.data.success && Array.isArray(response.data.data)) {
           setChallengeList(response.data.data);
         } else {
           setChallengeList([]);
         }
       } catch (error) {
-        console.error('Error fetching challenges:', error);
-        setChallengeList([]);    
+        console.error("Error fetching challenges:", error);
       } finally {
         setIsChallengesLoaded(true);
       }
     };
-
     fetchChallenges();
   }, [topic]);
 
+  // Initialize socket connection
   useEffect(() => {
-    const socket = io('http://127.0.0.1:4000'); 
-
+    const socket = io('http://127.0.0.1:4000');
     socket.on('connect', () => {
       console.log('Connected to the server!');
     });
@@ -56,6 +68,7 @@ const ChallengeTopicDetailsPage = () => {
     socket.on('time_up', () => {
       console.log('Time is up! Submitting exam...');
     });
+
     return () => {
       socket.disconnect();
     };
@@ -63,69 +76,47 @@ const ChallengeTopicDetailsPage = () => {
 
   return (
     <Box sx={{ height: "90vh" }}>
-      <Grid2 container sx={{ height: "100%" }}>
-        <Slide in={true} timeout={500} direction="right" mountOnEnter>
-          <Grid2
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              p: 2,
-              backgroundColor: "#27b898",
-              zIndex: 1,
-            }}
-            size={{ sm: 12, md: 1 }}
-            justifyContent="start"
-          >
-            <Box sx={{ textAlign: "center" }}>
-              <IconButton
-                sx={{ width: 50, height: 50 }}
-                component={RouterLink}
-                to={ROUTE_CHALLENGES}
-              >
-                <FontAwesomeIcon icon="arrow-left" />
-              </IconButton>
-            </Box>
-
-            <Typography
-              variant="h3"
-              sx={{
-                my: 3,
-                textOrientation: "sideways",
-                writingMode: "vertical-lr",
-                alignContent: "center",
-              }}
-            >
-              {topic}
-            </Typography>
-          </Grid2>
-        </Slide>
-        <Slide in={true} direction="right" timeout={500} mountOnEnter>
-          <Grid2
-            sx={{ py: 2, backgroundColor: "#55b3ed", zIndex: 0 }}
-            size={{ sm: 12, md: 3 }}
-          >
-            <List sx={{ listStyleType: "disc" }}>
-              {isChallengesLoaded ? (
-                challengeList.map((chal) => (
-                  <ListItem key={chal.id} sx={{ display: "list-item" }}>
-                    <HashLink to={`#${chal.id}-${chal.name}`}>
-                      {chal.name}
+      <Grid2 container sx={{ height: "100%", width: "100%" }}>
+        
+       
+        <Grid2 item sx={{ py: 2, backgroundColor: "#55b3ed", zIndex: 0, width: 300, height: "100%" }}>
+          <List sx={{ listStyleType: "disc", textAlign: "center" }}>
+            {isTopicsLoaded ? (
+              topicList.map((topic) => (
+                <ListItem key={topic.topic_id} sx={{ justifyContent: "center" }}>
+                  <Box
+                    sx={{
+                      width: "100%",
+                      p: 1,
+                      borderRadius: 1,
+                      transition: "background-color 0.3s ease",
+                      "&:hover": { backgroundColor: "#FF5733" },
+                    }}
+                  >
+                    <HashLink to={`#${topic.topic_id}-${topic.topic_name}`} style={{ fontSize: "1rem" }}>
+                      {topic.topic_name}
                     </HashLink>
-                  </ListItem>
-                ))
-              ) : (
-                <Box display="flex" sx={{ my: 4 }} justifyContent="center">
-                  <CircularProgress />
-                </Box>
-              )}
-            </List>
-          </Grid2>
-        </Slide>
-        <Grid2 size={{ sm: 12, md: 8 }}>
+                  </Box>
+                </ListItem>
+              ))
+            ) : (
+              <Box display="flex" sx={{ my: 4 }} justifyContent="center">
+                <CircularProgress />
+              </Box>
+            )}
+          </List>
+        </Grid2>
+
+       
+        <Grid2 item xs sx={{ p: 2 }}>
           {isChallengesLoaded ? (
-            challengeList.map((chal) => (
-              <ChallengeBlockComponent key={chal.id} challengeInfo={chal} />
-            ))
+            <Grid2 container spacing={3}>
+              {challengeList.map((chal) => (
+                <Grid2 item xs={12} sm={6} md={4} key={chal.id}>
+                  <ChallengeBlockComponent challengeInfo={chal} />
+                </Grid2>
+              ))}
+            </Grid2>
           ) : (
             <Box display="flex" sx={{ my: 4 }} justifyContent="center">
               <CircularProgress />

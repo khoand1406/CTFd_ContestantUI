@@ -15,6 +15,8 @@ export const API_CHALLENGE_SUBMISSION = "/submission"; // post
 export const API_CHALLENGE_START = "/challenge/start"; // post
 export const API_CHALLENGE_GET_BY_CATEGORY = "/challenge/list_challenge/"; // get
 export const API_CHALLENGE_ATTEMPT = "/v1/challenges/attempt"; // post
+export const API_CHALLENGE_LIST_TOPIC= "/get-listtopic" //get
+export const API_CHALLENGE_DETAILS= "/challenge"
 
 // TICKET RELATED
 export const API_TICKET_SUBMIT = "/ticket"; // post

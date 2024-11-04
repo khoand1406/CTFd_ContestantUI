@@ -1,4 +1,5 @@
 import { IChallenge } from "@/interfaces/challenges";
+import { ChallengeService } from "@/services/challenges.service";
 import {
   Box,
   Button,
@@ -6,62 +7,99 @@ import {
   CardContent,
   Divider,
   Grid2,
-  TextField,
-  Typography,
+  Typography
 } from "@mui/material";
-import React, { useState } from "react";
-import { ChallengeService } from "@/services/challenges.service";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface Prop {
   challengeInfo: IChallenge;
 }
 
-const ChallengeBlockComponent: React.FC<Prop> = (props) => {
+const ChallengeBlockComponent: React.FC<Prop> = ({ challengeInfo }) => {
   const { t } = useTranslation();
-  const [submission, setSubmission] = useState("");
+  const { topic } = useParams<{ topic: string }>();
+  const navigate = useNavigate();
 
+  const handleViewDetails = () => {
+    navigate(`/challenge/${challengeInfo.id}`);
+  };
+  
+  const [challengeList, setChallengeList] = useState<Array<IChallenge>>([]);
+   const [isChallengesLoaded, setIsChallengesLoaded] = useState<boolean>(true);
+  const [isChallengeStarted, setIsChallengeStarted] = useState(false);
+  const [timer, setTimer] = useState(600); 
+
+  useEffect(() => {
+    const fetchChallenges = async () => {
+      try {
+        const response = await ChallengeService.listChallengesByCategory({ category: topic || '' });
+
+        if (response?.data.success && Array.isArray(response.data.data)) {
+          setChallengeList(response.data.data);
+        } else {
+          setChallengeList([]);
+        }
+      } catch (error) {
+        console.error('Error fetching challenges:', error);
+        setChallengeList([]);
+        
+      } finally {
+        setIsChallengesLoaded(true);
+      }
+    };
+
+    fetchChallenges();
+  }, [topic]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isChallengeStarted && timer > 0) {
+      interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isChallengeStarted, timer]);
+
+ 
   return (
-    <Box>
-      <Card sx={{ m: 4, p: 2 }}>
+    <Box sx={{ p: 2 }}>
+      <Card sx={{ mx: 4, my: 2, p: 3, borderRadius: 2, boxShadow: 3 }}>
         <CardContent>
-          <Grid2 container>
-            <Grid2 size={{ md: 6 }}>
+          <Grid2 container spacing={3}>
+            <Grid2 item xs={12} md={6}>
               <Typography
-                id={`${props.challengeInfo.id}-${props.challengeInfo.name}`}
-                variant="h3"
+                id={`${challengeInfo.id}-${challengeInfo.name}`}
+                variant="h4"
+                sx={{ mb: 2 }}
               >
-                {props.challengeInfo.name}
+                {challengeInfo.name}
               </Typography>
-              <Typography variant="h5">
-                {props.challengeInfo.message}
+              <Typography variant="body1" sx={{ mb: 2, color: "text.secondary" }}>
+                {challengeInfo.requirements}
               </Typography>
-            </Grid2>
-            <Grid2 size={{ md: 6 }}>
-              <Button
-                color="primary"
-                variant="contained"
-                onClick={() => { ChallengeService.startChallenge({ challenge_id: props.challengeInfo.id, team_id: 1 }) }}
-              >
-                {t("challengeTopicDetails.startChallenge")}
-              </Button>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+                Time Limit: {challengeInfo.time_limit}
+              </Typography>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+               
+                <Button
+                  color="secondary"
+                  variant="contained"
+                  fullWidth
+                  sx={{ py: 1 }}
+                  onClick={handleViewDetails}
+                >
+                  {t("challengeTopicDetails.detail")}
+                </Button>
+              </Box>
             </Grid2>
           </Grid2>
-          <Box>
-            <TextField
-              placeholder={t("challengeTopicDetails.enterFlag")}
-              value={submission}
-              onChange={(e) => setSubmission(e.target.value)} // Cập nhật state khi người dùng nhập
-            />
-            <Button variant="contained" color="success" sx={{ ml: 2 }}
-              onClick={() => { ChallengeService.submitChallengeFlag({ challenge_id: props.challengeInfo.id, submission: submission }) }}
-            >
-              {t("challengeTopicDetails.submit")}
-            </Button>
-          </Box>
         </CardContent>
       </Card>
-      <Divider variant="middle" />
+      <Divider sx={{ my: 4 }} />
     </Box>
   );
 };

@@ -21,7 +21,8 @@
     "challengeTopicDetails": {
         "startChallenge": "Start Challenge",
         "enterFlag": "Enter your flag",
-        "submit": "Submit Flag"
+        "submit": "Submit Flag",
+        "detail": "View Details"
     },
     "error": {
         "loginFailed": "Incorrect username or password",

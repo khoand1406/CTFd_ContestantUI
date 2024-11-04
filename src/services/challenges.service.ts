@@ -1,17 +1,30 @@
 import {
+  API_CHALLENGE_ATTEMPT,
+  API_CHALLENGE_DETAILS,
+  API_CHALLENGE_GET_BY_CATEGORY,
   API_CHALLENGE_GET_LIST,
   API_CHALLENGE_GET_TOPICS,
+  API_CHALLENGE_LIST_TOPIC,
   API_CHALLENGE_START,
-  API_CHALLENGE_GET_BY_CATEGORY,
-  API_CHALLENGE_ATTEMPT,
   API_ENV,
 } from "@/constants/endpoints";
-import { IChallengeListRequest, IChallengeStartRequest, IChallengeByCategoryRequest, IChallengeAttemptRequest } from "@/interfaces/challenges";
+import { IChallengeAttemptRequest, IChallengeByCategoryRequest, IChallengeListRequest, IChallengeStartRequest } from "@/interfaces/challenges";
 import { BaseService } from "@/services/base.service";
 import { AxiosError } from "axios";
 
 
 export class ChallengeService extends BaseService {
+ 
+  static async getChallengeDetails(id: number | undefined) {
+      try{
+        const response= await this.request({auth : true}).get(
+          API_ENV.MAIN + `${API_CHALLENGE_DETAILS}/${id}`
+        );
+        return response;
+      }catch(error){
+        return (error as AxiosError).response;
+      }
+  }
   static async getChallengeTopics() {
     try {
       const response = await this.request({ auth: true }).get(
@@ -33,6 +46,19 @@ export class ChallengeService extends BaseService {
       return (error as AxiosError).response;
     }
   }
+
+  static async getListOfTopic(){
+    try{
+      const response= await this.request({auth: true}).get(
+        API_ENV.MAIN + `${API_CHALLENGE_LIST_TOPIC}`
+      );
+      return response;
+    }catch(error){
+      return (error as AxiosError).response;
+    }
+    
+  }
+
 
   static async startChallenge(req: IChallengeStartRequest) {
     try {
