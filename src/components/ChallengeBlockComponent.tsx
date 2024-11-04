@@ -12,52 +12,54 @@ import {
 import React, { useState, useEffect } from "react";
 import { ChallengeService } from "@/services/challenges.service";
 import { useTranslation } from "react-i18next";
-import io from 'socket.io-client';
+import io from "socket.io-client";
 import { StorageUtils } from "@/utils/storage.utils";
 import { KEY_USERINFO } from "@/constants/storage-keys";
-
 
 interface Prop {
   challengeInfo: IChallenge;
 }
 
-const ChallengeBlockComponent: React.FC<Prop> = (props) => {
+const ChallengeBlockComponent: React.FC<Prop> = ({ challengeInfo }) => {
   const { t } = useTranslation();
   const [submission, setSubmission] = useState<string>("");
-  const [challengeDescription, setChallengeDescription] = useState<string>(props.challengeInfo.description);
+  const [message, setMessage] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
+  const [challengeDescription, setChallengeDescription] = useState<string>(challengeInfo.description);
+  const tokenString = StorageUtils.getItem(KEY_USERINFO, "local") as string;
+  const token = JSON.parse(tokenString);
 
   const handleStartChallenge = async () => {
-    const tokenString = StorageUtils.getItem(KEY_USERINFO, "local") as string;
-    const token = JSON.parse(tokenString);
-    const teamId = token.user.team_id
-
     try {
       const response = await ChallengeService.startChallenge({
-        challenge_id: props.challengeInfo.id,
-        team_id: teamId,
+        challenge_id: challengeInfo.id,
+        generatedToken: token.generatedToken,
       });
+
       if (response?.data?.success && response.data.challenge?.description) {
         setChallengeDescription(response.data.challenge.description);
+        setMessage("Challenge started!");
       }
     } catch (error) {
       console.error("Error starting challenge:", error);
+      setMessage("Error starting challenge. Please try again.");
     }
   };
 
-  useEffect(() => {
-    const socket = io('http://127.0.0.1:4000');
-
-    socket.on('connect', () => {
-      console.log('Connected to the server!');
-    });
-    socket.emit('join_teams', { user_id: '123' });
-    socket.on('time_up', () => {
-      console.log('Time is up! Submitting exam...');
-    });
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  const handleSubmitChallenge = async () => {
+    try {
+      const response = await ChallengeService.submitChallengeFlag({
+        challenge_id: challengeInfo.id,
+        submission,
+      });
+      if (response?.data?.success) {
+        setMessage(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error submitting challenge:", error);
+      setMessage("Submission failed. Please check your input.");
+    }
+  };
 
   return (
     <Box>
@@ -65,15 +67,10 @@ const ChallengeBlockComponent: React.FC<Prop> = (props) => {
         <CardContent>
           <Grid container spacing={2}>
             <Grid item md={6}>
-              <Typography
-                id={`${props.challengeInfo.id}-${props.challengeInfo.name}`}
-                variant="h3"
-              >
-                {props.challengeInfo.name}
+              <Typography variant="h3" id={`${challengeInfo.id}-${challengeInfo.name}`}>
+                {challengeInfo.name}
               </Typography>
-              <Typography variant="h5">
-                {challengeDescription}
-              </Typography>
+              <Typography variant="h5">{challengeDescription}</Typography>
             </Grid>
             <Grid item md={6}>
               <Button
@@ -83,6 +80,7 @@ const ChallengeBlockComponent: React.FC<Prop> = (props) => {
               >
                 {t("challengeTopicDetails.startChallenge")}
               </Button>
+
             </Grid>
           </Grid>
           <Box mt={2}>
@@ -95,11 +93,16 @@ const ChallengeBlockComponent: React.FC<Prop> = (props) => {
               variant="contained"
               color="success"
               sx={{ ml: 2 }}
-              onClick={() => ChallengeService.submitChallengeFlag({ challenge_id: props.challengeInfo.id, submission })}
+              onClick={handleSubmitChallenge}
             >
               {t("challengeTopicDetails.submit")}
             </Button>
           </Box>
+          {message && (
+            <Typography mt={2} color={status === "success" ? "green" : "red"}>
+              {message}
+            </Typography>
+          )}
         </CardContent>
       </Card>
       <Divider variant="middle" />
