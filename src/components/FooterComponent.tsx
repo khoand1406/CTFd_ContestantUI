@@ -8,7 +8,7 @@ const FooterComponent = () => {
         color="secondary"
         sx={{ display: "flex", justifyContent: "center", p: 6 }}
       >
-        <Typography variant="h5">Powered with the CTFd API</Typography>
+        <Typography variant="h5"></Typography>
       </Box>
     </footer>
   );

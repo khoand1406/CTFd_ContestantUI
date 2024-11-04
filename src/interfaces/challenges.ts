@@ -2,12 +2,17 @@ export interface IChallenge {
   id: number;
   name: string;
   category: string;
-  message: string;
-  connectionInfo: string;
+  description: string;
+  message: string | null;
+  max_attempts: number;
+  next_id: number | null;
+  requirements: string | null;
+  state: string;
+  time_limit: number | null;
+  type: string;
   value: number;
-  maxAttempts: number;
-  isDeployed: boolean;
 }
+
 
 export interface IMultipleChoiceChallenge extends IChallenge {
   choices: Array<string>;
@@ -28,3 +33,18 @@ export interface IChallengeListRequest {
 export interface IChallengeListResponse {
   data: Array<IChallenge>;
 }
+
+export interface IChallengeStartRequest {
+  challenge_id: number;
+  team_id: number;
+}
+
+export interface IChallengeByCategoryRequest {
+    category: string;
+}
+
+export interface IChallengeAttemptRequest {
+  challenge_id: number;
+  submission: string;
+}
+

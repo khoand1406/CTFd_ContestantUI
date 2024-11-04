@@ -1,5 +1,4 @@
 import TopicBlockComponent from "@/components/TopicBlockComponent";
-import { API_R_200 } from "@/constants/res-codes";
 import { ROUTE_CHALLENGES } from "@/constants/routes";
 import { ChallengeService } from "@/services/challenges.service";
 import {
@@ -10,31 +9,34 @@ import {
   Slide,
   Typography,
 } from "@mui/material";
-import { AxiosResponse } from "axios";
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
 
 const ChallengeTopicsPage = () => {
-  const topics = ["forensics", "crypto", "pwn"];
+  const [topics, setTopics] = useState<{ topic_name: string }[]>([]);
   const { t } = useTranslation();
-
   const [isTopicsLoaded, setTopicsLoaded] = useState<boolean>(false);
 
-  const onGetChallengeTopics = async () => {
-    const response =
-      (await ChallengeService.getChallengeTopics()) as AxiosResponse;
+  useEffect(() => {
+    const fetchTopics = async () => {
+      try {
+        const response = await ChallengeService.getChallengeTopics();
+        if (response?.data.success && Array.isArray(response.data.data)) {
+          setTopics(response.data.data);
+        } else {
+          setTopics([]);
+        }
+      } catch (error) {
+        console.error("Error fetching topics:", error);
+        setTopics([]);
+      } finally {
+        setTopicsLoaded(true);
+      }
+    };
 
-    if (response.status === API_R_200) {
-      console.log("ok");
-    } else {
-      console.log("fail");
-    }
-  };
-
-  setTimeout(() => {
-    setTopicsLoaded(true);
-  }, 500);
+    fetchTopics();
+  }, []);
 
   return (
     <Box>
@@ -47,17 +49,16 @@ const ChallengeTopicsPage = () => {
             <Fade in={true} timeout={1500}>
               <Box sx={{ p: 4, zIndex: 0 }}>
                 <Grid2 container spacing={2}>
-                  {topics.map((t) => {
-                    return (
-                      <Grid2
-                        component={RouterLink}
-                        to={`${ROUTE_CHALLENGES}/${t}`}
-                        size={{ sm: 12, md: 4 }}
-                      >
-                        <TopicBlockComponent topicName={t} />
-                      </Grid2>
-                    );
-                  })}
+                  {topics.map((topic) => (
+                    <Grid2
+                      key={topic.topic_name}
+                      component={RouterLink}
+                      to={`${ROUTE_CHALLENGES}/${topic.topic_name}`}
+                      size={{ sm: 12, md: 4 }}
+                    >
+                      <TopicBlockComponent topicName={topic.topic_name} />
+                    </Grid2>
+                  ))}
                 </Grid2>
               </Box>
             </Fade>
