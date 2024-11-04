@@ -9,7 +9,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
+import { ChallengeService } from "@/services/challenges.service";
 import { useTranslation } from "react-i18next";
 
 interface Prop {
@@ -18,6 +19,8 @@ interface Prop {
 
 const ChallengeBlockComponent: React.FC<Prop> = (props) => {
   const { t } = useTranslation();
+  const [submission, setSubmission] = useState("");
+
   return (
     <Box>
       <Card sx={{ m: 4, p: 2 }}>
@@ -35,14 +38,24 @@ const ChallengeBlockComponent: React.FC<Prop> = (props) => {
               </Typography>
             </Grid2>
             <Grid2 size={{ md: 6 }}>
-              <Button color="primary" variant="contained">
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={() => { ChallengeService.startChallenge({ challenge_id: props.challengeInfo.id, team_id: 1 }) }}
+              >
                 {t("challengeTopicDetails.startChallenge")}
               </Button>
             </Grid2>
           </Grid2>
           <Box>
-            <TextField placeholder={t("challengeTopicDetails.enterFlag")} />
-            <Button variant="contained" color="success" sx={{ ml: 2 }}>
+            <TextField
+              placeholder={t("challengeTopicDetails.enterFlag")}
+              value={submission}
+              onChange={(e) => setSubmission(e.target.value)} // Cập nhật state khi người dùng nhập
+            />
+            <Button variant="contained" color="success" sx={{ ml: 2 }}
+              onClick={() => { ChallengeService.submitChallengeFlag({ challenge_id: props.challengeInfo.id, submission: submission }) }}
+            >
               {t("challengeTopicDetails.submit")}
             </Button>
           </Box>

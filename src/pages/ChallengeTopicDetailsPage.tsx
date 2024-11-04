@@ -1,5 +1,4 @@
 import ChallengeBlockComponent from "@/components/ChallengeBlockComponent";
-import { API_R_200 } from "@/constants/res-codes";
 import { ROUTE_CHALLENGES } from "@/constants/routes";
 import { IChallenge } from "@/interfaces/challenges";
 import { ChallengeService } from "@/services/challenges.service";
@@ -14,77 +13,53 @@ import {
   Slide,
   Typography,
 } from "@mui/material";
-import { AxiosResponse } from "axios";
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
-import { Link as RouterLink } from "react-router-dom";
+import { useParams, Link as RouterLink } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
+import io from 'socket.io-client';
 
 const ChallengeTopicDetailsPage = () => {
-  const { topic } = useParams();
+  const { topic } = useParams<{ topic: string }>();
   const { t } = useTranslation();
+  const [challengeList, setChallengeList] = useState<Array<IChallenge>>([]);
+  const [isChallengesLoaded, setIsChallengesLoaded] = useState<boolean>(true);
 
-  const [isChallengesLoaded, setChallengesLoaded] = useState<boolean>(false);
+  useEffect(() => {
+    const fetchChallenges = async () => {
+      try {
+        const response = await ChallengeService.listChallengesByCategory({ category: topic || '' });
 
-  setTimeout(() => {
-    setChallengesLoaded(true);
-  }, 500);
+        if (response?.data.success && Array.isArray(response.data.data)) {
+          setChallengeList(response.data.data);
+        } else {
+          setChallengeList([]);
+        }
+      } catch (error) {
+        console.error('Error fetching challenges:', error);
+        setChallengeList([]);    
+      } finally {
+        setIsChallengesLoaded(true);
+      }
+    };
 
-  const challengeList: Array<IChallenge> = [
-    {
-      id: 1,
-      name: "bruh",
-      category: "crypto",
-      message: "hi",
-      connectionInfo: "lmao",
-      value: 3,
-      maxAttempts: 1,
-      isDeployed: false,
-    },
-    {
-      id: 2,
-      name: "bruh",
-      category: "crypto",
-      message: "hi",
-      connectionInfo: "lmao",
-      value: 3,
-      maxAttempts: 1,
-      isDeployed: false,
-    },
-    {
-      id: 3,
-      name: "bruh",
-      category: "crypto",
-      message: "hi",
-      connectionInfo: "lmao",
-      value: 3,
-      maxAttempts: 1,
-      isDeployed: false,
-    },
-    {
-      id: 4,
-      name: "bruh",
-      category: "crypto",
-      message: "hi",
-      connectionInfo: "lmao",
-      value: 3,
-      maxAttempts: 1,
-      isDeployed: false,
-    },
-  ];
+    fetchChallenges();
+  }, [topic]);
 
-  const onGetChallengeListOfTopic = async () => {
-    const response = (await ChallengeService.getChallengeListOfTopic({
-      topic: topic as string,
-    })) as AxiosResponse;
+  useEffect(() => {
+    const socket = io('http://127.0.0.1:4000'); 
 
-    if (response.status === API_R_200) {
-      console.log("ok");
-    } else {
-      console.log("fail");
-    }
-  };
+    socket.on('connect', () => {
+      console.log('Connected to the server!');
+    });
+    socket.emit('join_teams', { user_id: '123' });
+    socket.on('time_up', () => {
+      console.log('Time is up! Submitting exam...');
+    });
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   return (
     <Box sx={{ height: "90vh" }}>
@@ -131,15 +106,13 @@ const ChallengeTopicDetailsPage = () => {
           >
             <List sx={{ listStyleType: "disc" }}>
               {isChallengesLoaded ? (
-                challengeList.map((chal) => {
-                  return (
-                    <ListItem sx={{ display: "list-item" }}>
-                      <HashLink to={`#${chal.id}-${chal.name}`}>
-                        {chal.name}
-                      </HashLink>
-                    </ListItem>
-                  );
-                })
+                challengeList.map((chal) => (
+                  <ListItem key={chal.id} sx={{ display: "list-item" }}>
+                    <HashLink to={`#${chal.id}-${chal.name}`}>
+                      {chal.name}
+                    </HashLink>
+                  </ListItem>
+                ))
               ) : (
                 <Box display="flex" sx={{ my: 4 }} justifyContent="center">
                   <CircularProgress />
@@ -150,9 +123,9 @@ const ChallengeTopicDetailsPage = () => {
         </Slide>
         <Grid2 size={{ sm: 12, md: 8 }}>
           {isChallengesLoaded ? (
-            challengeList.map((chal) => {
-              return <ChallengeBlockComponent challengeInfo={chal} />;
-            })
+            challengeList.map((chal) => (
+              <ChallengeBlockComponent key={chal.id} challengeInfo={chal} />
+            ))
           ) : (
             <Box display="flex" sx={{ my: 4 }} justifyContent="center">
               <CircularProgress />
