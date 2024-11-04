@@ -15,16 +15,13 @@ const ChallengeDetailsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isStartingInstance, setIsStartingInstance] = useState(false);
-<<<<<<< HEAD
   const tokenString = StorageUtils.getItem(KEY_USERINFO, "local") as string;
   const token = JSON.parse(tokenString);
 
-=======
+
   const [flag, setFlag] = useState("");
   const [isSubmittingFlag, setIsSubmittingFlag] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
->>>>>>> f5f5106e7607b4c497f2d646fcd8ceaada6a338c
-
   useEffect(() => {
     const fetchChallengeDetails = async () => {
       try {
@@ -130,7 +127,6 @@ const ChallengeDetailsPage = () => {
           <Typography variant="body1" paragraph>
             {challenge.description}
           </Typography>
-<<<<<<< HEAD
           {challenge.require_deploy && (
             <Button
               variant="contained"
@@ -144,7 +140,6 @@ const ChallengeDetailsPage = () => {
             </Button>
            
           )}
-=======
           <Button
             variant="contained"
             color="secondary"
@@ -180,7 +175,6 @@ const ChallengeDetailsPage = () => {
               </Alert>
             )}
           </Box>
->>>>>>> f5f5106e7607b4c497f2d646fcd8ceaada6a338c
         </>
       ) : (
         <Typography variant="h5">Challenge not found</Typography>
