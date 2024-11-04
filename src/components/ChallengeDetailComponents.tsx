@@ -1,5 +1,5 @@
 import { ChallengeService } from "@/services/challenges.service";
-import { Alert, Box, Button, CircularProgress, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -12,6 +12,9 @@ const ChallengeDetailsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isStartingInstance, setIsStartingInstance] = useState(false);
+  const [flag, setFlag] = useState("");
+  const [isSubmittingFlag, setIsSubmittingFlag] = useState(false);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchChallengeDetails = async () => {
@@ -45,7 +48,7 @@ const ChallengeDetailsPage = () => {
   const handleStartInstance = async () => {
     setIsStartingInstance(true);
     try {
-      const response = await ChallengeService.startChallenge;  //call api start 
+      const response = await ChallengeService.startChallenge;
       if (response.data.success) {
         console.log("Instance started:", response.data);
         // Navigate to instance or update state if needed
@@ -57,6 +60,24 @@ const ChallengeDetailsPage = () => {
       console.error("Error starting instance:", error);
     } finally {
       setIsStartingInstance(false);
+    }
+  };
+
+  const handleSubmitFlag = async () => {
+    setIsSubmittingFlag(true);
+    setSubmissionError(null);
+    try {
+      const response = await ChallengeService.submitFlag(challengeId, flag);
+      if (response.data.success) {
+        alert("Flag submitted successfully!");
+      } else {
+        setSubmissionError("Incorrect flag. Please try again.");
+      }
+    } catch (error) {
+      setSubmissionError("Error submitting flag.");
+      console.error("Error submitting flag:", error);
+    } finally {
+      setIsSubmittingFlag(false);
     }
   };
 
@@ -92,6 +113,32 @@ const ChallengeDetailsPage = () => {
           >
             {isStartingInstance ? "Starting..." : "Start Instance"}
           </Button>
+
+          {/* Flag Submission Section */}
+          <Box sx={{ mt: 4 }}>
+            <TextField
+              label="Enter Flag"
+              variant="outlined"
+              fullWidth
+              value={flag}
+              onChange={(e) => setFlag(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmitFlag}
+              disabled={isSubmittingFlag || !flag}
+              fullWidth
+            >
+              {isSubmittingFlag ? "Submitting..." : "Submit Flag"}
+            </Button>
+            {submissionError && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {submissionError}
+              </Alert>
+            )}
+          </Box>
         </>
       ) : (
         <Typography variant="h5">Challenge not found</Typography>
