@@ -1,66 +1,82 @@
-import { useState, useEffect } from "react";
-import { Box, Typography, Card, CardContent, Button } from "@mui/material";
+import { Box, Button, Card, CardContent, Stack, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
 
 const HomePage = () => {
-  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString('en-US', { hour12: false }));
+  const [currentTime, setCurrentTime] = useState(
+    new Date().toLocaleTimeString("en-US", { hour12: false })
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime(new Date().toLocaleTimeString('en-US', { hour12: false }));
+      setCurrentTime(new Date().toLocaleTimeString("en-US", { hour12: false }));
     }, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <Box sx={{ width: '70%', margin: '0 auto', mt: 5, textAlign: 'center' }}>
-      {/* Display current time */}
-      <Typography variant="h6" sx={{ mb: 3, mt: 10 }}>
+    <Box sx={{ width: '100%', maxWidth: '800px', margin: '0 auto', mt: 5, textAlign: 'center' }}>
+      {/* Header Text */}
+      <Typography variant="h4" color="primary" sx={{ mb: 3, fontWeight: 'bold' }}>
         Bring it on Flag Catchers!
       </Typography>
-      <Typography variant="h6" sx={{ mt: 3 }}>
-        <Typography variant="h1" component="span" sx={{ fontWeight: "bold" }}>
-          {currentTime}
-        </Typography>
+
+      {/* Current Time Display */}
+      <Typography variant="h1" component="div" sx={{ fontWeight: 'bold', color: 'secondary.main', mb: 2 }}>
+        {currentTime}
       </Typography>
-      <Typography variant="h6" sx={{ mt: 3 }}>
-        unitl competition ends
+      <Typography variant="h6" color="text.secondary" gutterBottom>
+        until competition ends
       </Typography>
 
-      {/* Cards for challenges and team ranking */}
-      <Box display="flex" justifyContent="space-around" padding={2} mt={5}>
+      {/* Cards for Challenges Solved and Team Ranking */}
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} mt={5} justifyContent="center">
         {/* Card for Challenges Solved */}
-        <Card sx={{ width: '30%', padding: 2, textAlign: 'center' }}>
+        <Card sx={{ width: '100%', maxWidth: 300, boxShadow: 3 }}>
           <CardContent>
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Typography variant="h6" component="div">
-                You have solved XX/YY challenges!
-              </Typography>
-            </Box>
-            <Typography variant="body2" color="text.secondary" mt={2}>
-              To replace any placeholder text (such as this), just click and start typing. We think this paragraph makes a great statement just as it is. But if you'd like to try a bit of customizing to make it your own, you can change the fonts with just a click.
+            <Typography variant="h6" component="div" color="primary" sx={{ fontWeight: 'bold', mb: 1 }}>
+              Challenges Solved
             </Typography>
-            <Button variant="contained" color="primary" sx={{ mt: 2 }}>
-              Go to challenges
+            <Typography variant="body1" color="text.primary">
+              You have solved XX/YY challenges!
+            </Typography>
+            <Typography variant="body2" color="text.secondary" mt={2}>
+              Continue challenging yourself to solve more! Aim for the highest rank by clicking the button below.
+            </Typography>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              fullWidth 
+              sx={{ mt: 3, fontWeight: 'bold' }}
+            >
+              Go to Challenges
             </Button>
           </CardContent>
         </Card>
 
         {/* Card for Team Ranking */}
-        <Card sx={{ width: '30%', padding: 2, textAlign: 'center' }}>
+        <Card sx={{ width: '100%', maxWidth: 300, boxShadow: 3 }}>
           <CardContent>
-            <Typography variant="h6" component="div">
+            <Typography variant="h6" component="div" color="primary" sx={{ fontWeight: 'bold', mb: 1 }}>
+              Team Ranking
+            </Typography>
+            <Typography variant="body1" color="text.primary">
               Your team reached #13 place!
             </Typography>
             <Typography variant="body2" color="text.secondary" mt={2}>
-              To replace any placeholder text (such as this), just click and start typing. We think this paragraph makes a great statement just as it is. But if you'd like to try a bit of customizing to make it your own, you can change the fonts with just a click.
+              Check the leaderboard and see if you can make it to the top 10!
             </Typography>
-            <Button variant="contained" color="primary" sx={{ mt: 2 }}>
-              Check the top 10
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              fullWidth 
+              sx={{ mt: 3, fontWeight: 'bold' }}
+            >
+              Check the Top 10
             </Button>
           </CardContent>
         </Card>
-      </Box>
+      </Stack>
     </Box>
   );
 };

@@ -1,9 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import LoginPage from "./pages/auth/LoginPage";
-import MainLayout from "./layouts/MainLayout";
-import HomePage from "./pages/HomePage";
-import ChallengeTopicsPage from "./pages/ChallengeTopicsPage";
-import ChallengeTopicDetailsPage from "./pages/ChallengeTopicDetailsPage";
+import ChallengeDetailsPage from "./components/ChallengeDetailComponents";
+import { ProtectedRoute } from "./components/common/ProtectedRoute";
 import {
   ROUTE_CHALLENGE_TOPIC,
   ROUTE_CHALLENGES,
@@ -16,10 +13,14 @@ import {
   ROUTE_TICKET_SUBMIT,
   ROUTE_TICKETS,
 } from "./constants/routes";
-import ScoreboardPage from "./pages/ScoreboardPage";
+import MainLayout from "./layouts/MainLayout";
+import LoginPage from "./pages/auth/LoginPage";
 import LogoutPage from "./pages/auth/LogoutPage";
-import { ProtectedRoute } from "./components/common/ProtectedRoute";
 import ProfilePage from "./pages/auth/ProfilePage";
+import ChallengeTopicDetailsPage from "./pages/ChallengeTopicDetailsPage";
+import ChallengeTopicsPage from "./pages/ChallengeTopicsPage";
+import HomePage from "./pages/HomePage";
+import ScoreboardPage from "./pages/ScoreboardPage";
 import SubmitTicketPage from "./pages/SubmitTicketPage";
 import TicketDetailPage from "./pages/TicketDetailPage";
 import TicketListPage from "./pages/TicketListPage";
@@ -48,6 +49,10 @@ function App() {
           <Route
             path={ROUTE_TICKETS}
             element={<ProtectedRoute children={<TicketListPage />} />}
+          />
+          <Route
+            path="/challenge/:id"  
+            element={<ProtectedRoute children={<ChallengeDetailsPage />} />}
           />
           <Route
             path={ROUTE_TICKET_DETAIL}

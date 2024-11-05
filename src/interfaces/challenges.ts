@@ -10,8 +10,8 @@ export interface IChallenge {
   time_limit: number | null;
   type: string;
   value: number;
+  require_deploy: number;
 }
-
 
 export interface IMultipleChoiceChallenge extends IChallenge {
   choices: Array<string>;
@@ -34,8 +34,9 @@ export interface IChallengeListResponse {
 }
 
 export interface IChallengeStartRequest {
-  challenge_id: number;
-  generatedToken: string;
+  challenge_id: number,
+  generatedToken: string
+
 }
 
 export interface IChallengeByCategoryRequest {
