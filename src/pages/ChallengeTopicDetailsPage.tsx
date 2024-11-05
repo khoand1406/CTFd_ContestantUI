@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
-import io from 'socket.io-client';
 
 
 const ChallengeTopicDetailsPage = () => {
@@ -50,7 +49,9 @@ const ChallengeTopicDetailsPage = () => {
           setChallengeList([]);
         }
       } catch (error) {
-        console.error("Error fetching challenges:", error);
+
+        console.error('Error fetching challenges:', error);
+        setChallengeList([]);
       } finally {
         setIsChallengesLoaded(true);
       }
@@ -58,7 +59,6 @@ const ChallengeTopicDetailsPage = () => {
     fetchChallenges();
   }, [topic]);
 
- 
   return (
     <Box sx={{ height: "90vh" }}>
       <Grid2 container sx={{ height: "100%", width: "100%" }}>
