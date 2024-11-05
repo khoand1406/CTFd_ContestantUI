@@ -80,9 +80,11 @@ const ChallengeBlockComponent: React.FC<Prop> = ({ challengeInfo }) => {
               <Typography variant="body1" sx={{ mb: 2, color: "text.secondary" }}>
                 {challengeInfo.requirements}
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
-                Time Limit: {challengeInfo.time_limit}
-              </Typography>
+              {challengeInfo.time_limit != null && challengeInfo.time_limit > 0 && (
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+                  Time Limit: {challengeInfo.time_limit}
+                </Typography>
+              )}
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                
                 <Button

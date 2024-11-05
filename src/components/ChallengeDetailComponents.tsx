@@ -1,5 +1,12 @@
 import { ChallengeService } from "@/services/challenges.service";
-import { Alert, Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { IChallenge } from "@/interfaces/challenges";
 import { useNavigate, useParams } from "react-router-dom";
@@ -18,10 +25,45 @@ const ChallengeDetailsPage = () => {
   const tokenString = StorageUtils.getItem(KEY_USERINFO, "local") as string;
   const token = JSON.parse(tokenString);
 
-
   const [flag, setFlag] = useState("");
   const [isSubmittingFlag, setIsSubmittingFlag] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [wsMessage, setWsMessage] = useState<string | null>(null); // WebSocket message state
+
+
+  useEffect(() => {
+    const ws = new WebSocket("ws://127.0.0.1:5002");
+
+    ws.onopen = () => {
+      console.log("WebSocket connection opened.");
+      // Send ping at intervals
+      const pingInterval = setInterval(() => {
+        ws.send("ping");
+        console.log("Sent ping");
+      }, 10000); 
+      ws.onclose = () => {
+        clearInterval(pingInterval); // Clear interval on close
+        console.log("WebSocket connection closed.");
+      };
+    };
+
+    ws.onmessage = (event) => {
+      console.log("Received message from server:", event.data);
+      if (event.data === "pong") {
+        console.log("Received pong from server");
+      }
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, []);
+
+  // Fetch challenge details
   useEffect(() => {
     const fetchChallengeDetails = async () => {
       try {
@@ -53,9 +95,8 @@ const ChallengeDetailsPage = () => {
 
   const handleStartInstance = async () => {
     setIsStartingInstance(true);
+
     try {
-
-
       if (!challengeId) {
         setError("Invalid challenge ID.");
         setIsStartingInstance(false);
@@ -65,10 +106,16 @@ const ChallengeDetailsPage = () => {
       const response = await ChallengeService.startChallenge({
         challenge_id: challengeId,
         generatedToken: token.generatedToken,
-      });  //call api start 
+      });
+
       if (response?.data.success) {
-        console.log("Instance started:", response.data);
-        // Navigate to instance or update state if needed
+        if (challenge) {
+          setChallenge({
+            ...challenge,
+            connection_info: response.data.connection_info, // Thêm connection_info vào challenge
+          });
+        }
+
       } else {
         setError("Failed to start the instance.");
       }
@@ -88,10 +135,9 @@ const ChallengeDetailsPage = () => {
       if (response?.data.data.status === "correct") {
         alert(`${response.data.data.message}`);
       } else if (response?.data.data.status === "already_solved") {
-        alert(`${response.data.data.message}`);  
-      }
-      else {
-        setSubmissionError(response?.data?.data?.message || "In correct flag");
+        alert(`${response.data.data.message}`);
+      } else {
+        setSubmissionError(response?.data?.data?.message || "Incorrect flag");
       }
     } catch (error) {
       setSubmissionError("Error submitting flag.");
@@ -100,6 +146,15 @@ const ChallengeDetailsPage = () => {
       setIsSubmittingFlag(false);
     }
   };
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError("");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   if (isLoading) {
     return (
@@ -112,8 +167,13 @@ const ChallengeDetailsPage = () => {
   return (
     <Box sx={{ p: 4, maxWidth: 600, margin: "auto" }}>
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={{ mb: 3, border: '2px solid red' }}>
           {error}
+        </Alert>
+      )}
+      {wsMessage && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          {wsMessage}  {/* Display WebSocket message */}
         </Alert>
       )}
       {challenge ? (
@@ -122,30 +182,17 @@ const ChallengeDetailsPage = () => {
             {challenge.name}
           </Typography>
           <Typography variant="body1" paragraph>
-            {challenge.description}
+            {challenge.description + "         " + challenge.connection_info || ""}
           </Typography>
           {challenge.require_deploy && (
             <Button
               variant="contained"
-              color="secondary"
+              color="primary"
               onClick={handleStartInstance}
               sx={{ mt: 3 }}
               disabled={isStartingInstance}
             >
-
-              {isStartingInstance ? "Starting..." : "Start Instance"}
-            </Button>
-
-          )}
-          {challenge.require_deploy === 0 && (
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleStartInstance}
-              sx={{ mt: 3 }}
-              disabled={isStartingInstance}
-            >
-              {isStartingInstance ? "Starting..." : "Start Instance"}
+              {isStartingInstance ? "Starting..." : "Start Challenge"}
             </Button>
           )}
 

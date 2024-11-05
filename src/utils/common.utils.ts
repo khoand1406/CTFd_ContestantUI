@@ -20,7 +20,6 @@ export class CommonUtils {
   // }
   static isLoggedIn() {
     const token = StorageUtils.getItem(KEY_USERINFO, "local") as string;
-    console.log(token);
     return token ? true : false;
   }
 }
