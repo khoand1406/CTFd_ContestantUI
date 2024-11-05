@@ -1,10 +1,10 @@
+import { KEY_USERINFO } from "@/constants/storage-keys";
+import { IChallenge } from "@/interfaces/challenges";
 import { ChallengeService } from "@/services/challenges.service";
+import { StorageUtils } from "@/utils/storage.utils";
 import { Alert, Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { IChallenge } from "@/interfaces/challenges";
 import { useNavigate, useParams } from "react-router-dom";
-import { StorageUtils } from "@/utils/storage.utils";
-import { KEY_USERINFO } from "@/constants/storage-keys";
 
 const ChallengeDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -53,6 +53,7 @@ const ChallengeDetailsPage = () => {
 
   const handleStartInstance = async () => {
     setIsStartingInstance(true);
+
     try {
 
 
@@ -88,7 +89,7 @@ const ChallengeDetailsPage = () => {
       if (response?.data.data.status === "correct") {
         alert(`${response.data.data.message}`);
       } else if (response?.data.data.status === "already_solved") {
-        alert(`${response.data.data.message}`);  
+        alert(`${response.data.data.message}`);
       }
       else {
         setSubmissionError(response?.data?.data?.message || "In correct flag");
@@ -112,9 +113,9 @@ const ChallengeDetailsPage = () => {
   return (
     <Box sx={{ p: 4, maxWidth: 600, margin: "auto" }}>
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }}>
+        <Alert severity="error" sx={{ mb: 3, border: '2px solid red' }}>
           {error}
-        </Alert>
+       </Alert>
       )}
       {challenge ? (
         <>
@@ -137,7 +138,7 @@ const ChallengeDetailsPage = () => {
             </Button>
 
           )}
-          {challenge.require_deploy === 0 && (
+          {challenge.require_deploy && (
             <Button
               variant="contained"
               color="secondary"

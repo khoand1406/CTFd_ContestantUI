@@ -22,7 +22,7 @@ const ChallengeTopicDetailsPage = () => {
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const response = await ChallengeService.getListOfTopic();
+        const response = await ChallengeService.getChallengeTopics();
         if (response?.data.success && Array.isArray(response.data.data)) {
           setTopicList(response.data.data);
         } else {

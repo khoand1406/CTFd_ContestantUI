@@ -29,16 +29,16 @@ export class ChallengeService extends BaseService {
       return (error as AxiosError).response;
     }
   }
- 
+
   static async getChallengeDetails(id: number | undefined) {
-      try{
-        const response= await this.request({auth : true}).get(
-          API_ENV.MAIN + `${API_CHALLENGE_DETAILS}/${id}`
-        );
-        return response;
-      }catch(error){
-        return (error as AxiosError).response;
-      }
+    try {
+      const response = await this.request({ auth: true }).get(
+        API_ENV.MAIN + `${API_CHALLENGE_DETAILS}/${id}`
+      );
+      return response;
+    } catch (error) {
+      return (error as AxiosError).response;
+    }
   }
   static async getChallengeTopics() {
     try {
@@ -62,16 +62,16 @@ export class ChallengeService extends BaseService {
     }
   }
 
-  static async getListOfTopic(){
-    try{
-      const response= await this.request({auth: true}).get(
+  static async getListOfTopic() {
+    try {
+      const response = await this.request({ auth: true }).get(
         API_ENV.MAIN + `${API_CHALLENGE_LIST_TOPIC}`
       );
       return response;
-    }catch(error){
+    } catch (error) {
       return (error as AxiosError).response;
     }
-    
+
   }
 
   static async startChallenge(req: IChallengeStartRequest) {
@@ -90,18 +90,6 @@ export class ChallengeService extends BaseService {
     try {
       const response = await this.request({ auth: true }).get(
         API_ENV.MAIN + `${API_CHALLENGE_GET_BY_CATEGORY}/${req.category}`
-      );
-      return response;
-    } catch (error) {
-      return (error as AxiosError).response;
-    }
-  }
-
-  static async submitChallengeFlag(req: IChallengeAttemptRequest) {
-    try {
-      const response = await this.request({ auth: true }).post(
-        API_ENV.MAIN + API_CHALLENGE_ATTEMPT,
-        req
       );
       return response;
     } catch (error) {
