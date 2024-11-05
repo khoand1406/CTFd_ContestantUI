@@ -13,9 +13,21 @@ import { BaseService } from "@/services/base.service";
 import { AxiosError } from "axios";
 
 
+
 export class ChallengeService extends BaseService {
-  static submitFlag(challengeId: number | undefined, flag: string) {
-    throw new Error("Method not implemented.");
+  static async submitFlag(challenge_id: number | undefined, submission: string) {
+    try {
+      const response = await this.request({ auth: true }).post(
+        API_ENV.MAIN + API_CHALLENGE_ATTEMPT,
+        {
+          challenge_id,
+          submission,
+        }
+      );
+      return response;
+    } catch (error) {
+      return (error as AxiosError).response;
+    }
   }
  
   static async getChallengeDetails(id: number | undefined) {
@@ -61,7 +73,6 @@ export class ChallengeService extends BaseService {
     }
     
   }
-
 
   static async startChallenge(req: IChallengeStartRequest) {
     try {

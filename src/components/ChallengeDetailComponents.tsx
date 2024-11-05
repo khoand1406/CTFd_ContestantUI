@@ -62,15 +62,11 @@ const ChallengeDetailsPage = () => {
         return;
       }
 
-      const response = await ChallengeService.startChallenge(
-        {
-          challenge_id: challengeId,
-          generatedToken: token.generatedToken,
-        }
-      );  //call api start 
+      const response = await ChallengeService.startChallenge({
+        challenge_id: challengeId,
+        generatedToken: token.generatedToken,
+      });  //call api start 
       if (response?.data.success) {
-      const response = await ChallengeService.startChallenge;
-      if (response.data.success) {
         console.log("Instance started:", response.data);
         // Navigate to instance or update state if needed
       } else {
@@ -89,10 +85,13 @@ const ChallengeDetailsPage = () => {
     setSubmissionError(null);
     try {
       const response = await ChallengeService.submitFlag(challengeId, flag);
-      if (response.data.success) {
-        alert("Flag submitted successfully!");
-      } else {
-        setSubmissionError("Incorrect flag. Please try again.");
+      if (response?.data.data.status === "correct") {
+        alert(`${response.data.data.message}`);
+      } else if (response?.data.data.status === "already_solved") {
+        alert(`${response.data.data.message}`);  
+      }
+      else {
+        setSubmissionError(response?.data?.data?.message || "In correct flag");
       }
     } catch (error) {
       setSubmissionError("Error submitting flag.");
@@ -133,20 +132,22 @@ const ChallengeDetailsPage = () => {
               sx={{ mt: 3 }}
               disabled={isStartingInstance}
             >
-              
+
               {isStartingInstance ? "Starting..." : "Start Instance"}
             </Button>
-           
+
           )}
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleStartInstance}
-            sx={{ mt: 3 }}
-            disabled={isStartingInstance}
-          >
-            {isStartingInstance ? "Starting..." : "Start Instance"}
-          </Button>
+          {challenge.require_deploy === 0 && (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleStartInstance}
+              sx={{ mt: 3 }}
+              disabled={isStartingInstance}
+            >
+              {isStartingInstance ? "Starting..." : "Start Instance"}
+            </Button>
+          )}
 
           {/* Flag Submission Section */}
           <Box sx={{ mt: 4 }}>
