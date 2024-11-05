@@ -8,7 +8,7 @@ import {
   API_CHALLENGE_START,
   API_ENV,
 } from "@/constants/endpoints";
-import { IChallengeAttemptRequest, IChallengeByCategoryRequest, IChallengeListRequest, IChallengeStartRequest } from "@/interfaces/challenges";
+import { IChallengeByCategoryRequest, IChallengeListRequest, IChallengeStartRequest } from "@/interfaces/challenges";
 import { BaseService } from "@/services/base.service";
 import { AxiosError } from "axios";
 
@@ -93,6 +93,16 @@ export class ChallengeService extends BaseService {
       );
       return response;
     } catch (error) {
+      return (error as AxiosError).response;
+    }
+  }
+  static async listChallengeByTopic(topicName: string){
+    try{
+      const response = await this.request({ auth: true }).get(
+        API_ENV.MAIN + `${API_CHALLENGE_GET_BY_CATEGORY}/${topicName}`
+      );
+      return response;
+    }catch(error){
       return (error as AxiosError).response;
     }
   }

@@ -2,7 +2,7 @@ import { KEY_USERINFO } from "@/constants/storage-keys";
 import { IChallenge } from "@/interfaces/challenges";
 import { ChallengeService } from "@/services/challenges.service";
 import { StorageUtils } from "@/utils/storage.utils";
-import { Alert, Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Grid, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -18,10 +18,32 @@ const ChallengeDetailsPage = () => {
   const tokenString = StorageUtils.getItem(KEY_USERINFO, "local") as string;
   const token = JSON.parse(tokenString);
 
-
   const [flag, setFlag] = useState("");
   const [isSubmittingFlag, setIsSubmittingFlag] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+
+  const [remainingTime, setRemainingTime] = useState<number>(0);
+  const [isTimerActive, setIsTimerActive] = useState<boolean>(false);
+
+
+  //count-down logic
+  useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+    if (remainingTime > 0) {
+      timer = setInterval(() => {
+        setRemainingTime((prevTime) => Math.max(prevTime - 1, 0));
+      }, 1000);
+    }
+
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [remainingTime]);
+
+
+  //fetch challenge voi API 
   useEffect(() => {
     const fetchChallengeDetails = async () => {
       try {
@@ -35,7 +57,9 @@ const ChallengeDetailsPage = () => {
         const response = await ChallengeService.getChallengeDetails(challengeId);
 
         if (response?.data.success) {
+
           setChallenge(response.data.data);
+          setRemainingTime(response.data.data.time_limit)
           setError(null);
         } else {
           setError("Challenge not found.");
@@ -51,12 +75,12 @@ const ChallengeDetailsPage = () => {
     fetchChallengeDetails();
   }, [challengeId]);
 
+
+  // nut start button event click
   const handleStartInstance = async () => {
     setIsStartingInstance(true);
 
     try {
-
-
       if (!challengeId) {
         setError("Invalid challenge ID.");
         setIsStartingInstance(false);
@@ -66,12 +90,15 @@ const ChallengeDetailsPage = () => {
       const response = await ChallengeService.startChallenge({
         challenge_id: challengeId,
         generatedToken: token.generatedToken,
-      });  //call api start 
+      });
       if (response?.data.success) {
         console.log("Instance started:", response.data);
-        // Navigate to instance or update state if needed
+        
+        
       } else {
         setError("Failed to start the instance.");
+       
+          
       }
     } catch (error) {
       setError("Error starting instance.");
@@ -90,9 +117,8 @@ const ChallengeDetailsPage = () => {
         alert(`${response.data.data.message}`);
       } else if (response?.data.data.status === "already_solved") {
         alert(`${response.data.data.message}`);
-      }
-      else {
-        setSubmissionError(response?.data?.data?.message || "In correct flag");
+      } else {
+        setSubmissionError(response?.data?.data?.message || "Incorrect flag");
       }
     } catch (error) {
       setSubmissionError("Error submitting flag.");
@@ -109,76 +135,79 @@ const ChallengeDetailsPage = () => {
       </Box>
     );
   }
-
+  
   return (
-    <Box sx={{ p: 4, maxWidth: 600, margin: "auto" }}>
+    <Box
+      sx={{
+        p: 2,
+        maxWidth: "80%",
+        margin: "auto",
+      }}
+    >
       {error && (
-        <Alert severity="error" sx={{ mb: 3, border: '2px solid red' }}>
+        <Alert severity="error" sx={{ mb: 3, border: "2px solid red" }}>
           {error}
-       </Alert>
+        </Alert>
       )}
-      {challenge ? (
-        <>
-          <Typography variant="h4" component="h1" gutterBottom>
-            {challenge.name}
-          </Typography>
-          <Typography variant="body1" paragraph>
-            {challenge.description}
-          </Typography>
-          {challenge.require_deploy && (
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleStartInstance}
-              sx={{ mt: 3 }}
-              disabled={isStartingInstance}
-            >
+      <Box sx={{ p: 4, maxWidth: 900, margin: "auto" }}>
+        {challenge ? (
+          <Grid container spacing={4}>
+            {/* Challenge Details Section (8 columns) */}
+            <Grid item xs={12} md={8}>
+              <Typography variant="h4" component="h1" gutterBottom>
+                {challenge.name}
+              </Typography>
+              <Typography variant="h6" color="secondary">
+                Time Remaining: {remainingTime} seconds
+              </Typography>
+              <Typography variant="body1" paragraph>
+                {challenge.description}
+              </Typography>
+            </Grid>
 
-              {isStartingInstance ? "Starting..." : "Start Instance"}
-            </Button>
-
-          )}
-          {challenge.require_deploy && (
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={handleStartInstance}
-              sx={{ mt: 3 }}
-              disabled={isStartingInstance}
-            >
-              {isStartingInstance ? "Starting..." : "Start Instance"}
-            </Button>
-          )}
-
-          {/* Flag Submission Section */}
-          <Box sx={{ mt: 4 }}>
-            <TextField
-              label="Enter Flag"
-              variant="outlined"
-              fullWidth
-              value={flag}
-              onChange={(e) => setFlag(e.target.value)}
-              sx={{ mb: 2 }}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleSubmitFlag}
-              disabled={isSubmittingFlag || !flag}
-              fullWidth
-            >
-              {isSubmittingFlag ? "Submitting..." : "Submit Flag"}
-            </Button>
-            {submissionError && (
-              <Alert severity="error" sx={{ mt: 2 }}>
-                {submissionError}
-              </Alert>
-            )}
-          </Box>
-        </>
-      ) : (
-        <Typography variant="h5">Challenge not found</Typography>
-      )}
+            {/* Flag Submission Section (4 columns) */}
+            <Grid item xs={12} md={4}>
+              <TextField
+                label="Enter Flag"
+                variant="outlined"
+                fullWidth
+                value={flag}
+                onChange={(e) => setFlag(e.target.value)}
+                sx={{ mb: 2 }}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmitFlag}
+                disabled={isSubmittingFlag || !flag}
+                fullWidth
+                sx={{ mb: 2 }}
+              >
+                {isSubmittingFlag ? "Submitting..." : "Submit Flag"}
+              </Button>
+              {submissionError && (
+                <Alert severity="error" sx={{ mt: 2 }}>
+                  {submissionError}
+                </Alert>
+              )}
+              {challenge.require_deploy && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleStartInstance}
+                  fullWidth
+                  disabled={isStartingInstance}
+                  sx={{ mt: 3 }}
+                >
+                  {isStartingInstance ? "Starting..." : "Start Instance"}
+                </Button>
+              )}
+            </Grid>
+          </Grid>
+        ) : (
+          <Typography variant="h5">Challenge not found</Typography>
+        )}
+      </Box>
     </Box>
   );
 };
