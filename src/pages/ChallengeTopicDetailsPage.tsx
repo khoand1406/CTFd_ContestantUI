@@ -6,13 +6,12 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
-import io from 'socket.io-client';
 
 
 const ChallengeTopicDetailsPage = () => {
   const { topic } = useParams<{ topic: string }>();
   const { t } = useTranslation();
-
+ 
   const [challengeList, setChallengeList] = useState<Array<IChallenge>>([]);
   const [topicList, setTopicList] = useState<{ topic_id: string; topic_name: string }[]>([]);
   const [isChallengesLoaded, setIsChallengesLoaded] = useState(false);
@@ -37,6 +36,7 @@ const ChallengeTopicDetailsPage = () => {
     };
     fetchTopics();
   }, []);
+  
 
   // Fetch challenges by category
   useEffect(() => {
@@ -50,14 +50,15 @@ const ChallengeTopicDetailsPage = () => {
           setChallengeList([]);
         }
       } catch (error) {
-        console.error("Error fetching challenges:", error);
+
+        console.error('Error fetching challenges:', error);
+        setChallengeList([]);
       } finally {
         setIsChallengesLoaded(true);
       }
     };
     fetchChallenges();
   }, [topic]);
-
 
   return (
     <Box sx={{ height: "90vh" }}>
@@ -114,3 +115,5 @@ const ChallengeTopicDetailsPage = () => {
 };
 
 export default ChallengeTopicDetailsPage;
+
+

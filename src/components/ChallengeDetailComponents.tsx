@@ -1,17 +1,17 @@
+import { KEY_USERINFO } from "@/constants/storage-keys";
+import { IChallenge } from "@/interfaces/challenges";
 import { ChallengeService } from "@/services/challenges.service";
+import { StorageUtils } from "@/utils/storage.utils";
 import {
   Alert,
   Box,
   Button,
-  CircularProgress,
+  CircularProgress, Grid,
   TextField,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { IChallenge } from "@/interfaces/challenges";
 import { useNavigate, useParams } from "react-router-dom";
-import { StorageUtils } from "@/utils/storage.utils";
-import { KEY_USERINFO } from "@/constants/storage-keys";
 
 const ChallengeDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,7 +40,7 @@ const ChallengeDetailsPage = () => {
       const pingInterval = setInterval(() => {
         ws.send("ping");
         console.log("Sent ping");
-      }, 10000); 
+      }, 10000);
       ws.onclose = () => {
         clearInterval(pingInterval); // Clear interval on close
         console.log("WebSocket connection closed.");
@@ -64,6 +64,29 @@ const ChallengeDetailsPage = () => {
   }, []);
 
   // Fetch challenge details
+
+  const [remainingTime, setRemainingTime] = useState<number>(0);
+  const [isTimerActive, setIsTimerActive] = useState<boolean>(false);
+
+
+  //count-down logic
+  useEffect(() => {
+    let timer: NodeJS.Timeout | null = null;
+    if (remainingTime > 0) {
+      timer = setInterval(() => {
+        setRemainingTime((prevTime) => Math.max(prevTime - 1, 0));
+      }, 1000);
+    }
+
+    return () => {
+      if (timer) {
+        clearInterval(timer);
+      }
+    };
+  }, [remainingTime]);
+
+
+  //fetch challenge voi API 
   useEffect(() => {
     const fetchChallengeDetails = async () => {
       try {
@@ -77,7 +100,9 @@ const ChallengeDetailsPage = () => {
         const response = await ChallengeService.getChallengeDetails(challengeId);
 
         if (response?.data.success) {
+
           setChallenge(response.data.data);
+          setRemainingTime(response.data.data.time_limit)
           setError(null);
         } else {
           setError("Challenge not found.");
@@ -93,8 +118,11 @@ const ChallengeDetailsPage = () => {
     fetchChallengeDetails();
   }, [challengeId]);
 
+
+  // nut start button event click
   const handleStartInstance = async () => {
     setIsStartingInstance(true);
+
 
     try {
       if (!challengeId) {
@@ -115,7 +143,6 @@ const ChallengeDetailsPage = () => {
             connection_info: response.data.connection_info, // Thêm connection_info vào challenge
           });
         }
-
       } else {
         setError("Failed to start the instance.");
       }
@@ -138,6 +165,7 @@ const ChallengeDetailsPage = () => {
         alert(`${response.data.data.message}`);
       } else {
         setSubmissionError(response?.data?.data?.message || "Incorrect flag");
+        alert(`${response?.data.data.message}`);
       }
     } catch (error) {
       setSubmissionError("Error submitting flag.");
@@ -165,7 +193,13 @@ const ChallengeDetailsPage = () => {
   }
 
   return (
-    <Box sx={{ p: 4, maxWidth: 600, margin: "auto" }}>
+    <Box
+      sx={{
+        p: 2,
+        maxWidth: "80%",
+        margin: "auto",
+      }}
+    >
       {error && (
         <Alert severity="error" sx={{ mb: 3, border: '2px solid red' }}>
           {error}
@@ -182,7 +216,7 @@ const ChallengeDetailsPage = () => {
             {challenge.name}
           </Typography>
           <Typography variant="body1" paragraph>
-            {challenge.description + "         " + challenge.connection_info || ""}
+            {challenge.description + "         " + (challenge.connection_info ?? "") || ""}
           </Typography>
           {challenge.require_deploy && (
             <Button
