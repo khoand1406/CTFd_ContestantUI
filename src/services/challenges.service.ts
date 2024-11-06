@@ -8,7 +8,7 @@ import {
   API_CHALLENGE_START,
   API_ENV,
 } from "@/constants/endpoints";
-import { IChallengeAttemptRequest, IChallengeByCategoryRequest, IChallengeListRequest, IChallengeStartRequest } from "@/interfaces/challenges";
+import { IChallengeByCategoryRequest, IChallengeListRequest, IChallengeStartRequest } from "@/interfaces/challenges";
 import { BaseService } from "@/services/base.service";
 import { AxiosError } from "axios";
 
@@ -29,16 +29,16 @@ export class ChallengeService extends BaseService {
       return (error as AxiosError).response;
     }
   }
- 
+
   static async getChallengeDetails(id: number | undefined) {
-      try{
-        const response= await this.request({auth : true}).get(
-          API_ENV.MAIN + `${API_CHALLENGE_DETAILS}/${id}`
-        );
-        return response;
-      }catch(error){
-        return (error as AxiosError).response;
-      }
+    try {
+      const response = await this.request({ auth: true }).get(
+        API_ENV.MAIN + `${API_CHALLENGE_DETAILS}/${id}`
+      );
+      return response;
+    } catch (error) {
+      return (error as AxiosError).response;
+    }
   }
   static async getChallengeTopics() {
     try {
@@ -62,16 +62,16 @@ export class ChallengeService extends BaseService {
     }
   }
 
-  static async getListOfTopic(){
-    try{
-      const response= await this.request({auth: true}).get(
+  static async getListOfTopic() {
+    try {
+      const response = await this.request({ auth: true }).get(
         API_ENV.MAIN + `${API_CHALLENGE_LIST_TOPIC}`
       );
       return response;
-    }catch(error){
+    } catch (error) {
       return (error as AxiosError).response;
     }
-    
+
   }
 
   static async startChallenge(req: IChallengeStartRequest) {
@@ -96,15 +96,13 @@ export class ChallengeService extends BaseService {
       return (error as AxiosError).response;
     }
   }
-
-  static async submitChallengeFlag(req: IChallengeAttemptRequest) {
-    try {
-      const response = await this.request({ auth: true }).post(
-        API_ENV.MAIN + API_CHALLENGE_ATTEMPT,
-        req
+  static async listChallengeByTopic(topicName: string){
+    try{
+      const response = await this.request({ auth: true }).get(
+        API_ENV.MAIN + `${API_CHALLENGE_GET_BY_CATEGORY}/${topicName}`
       );
       return response;
-    } catch (error) {
+    }catch(error){
       return (error as AxiosError).response;
     }
   }

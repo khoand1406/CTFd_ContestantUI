@@ -11,18 +11,18 @@ import { HashLink } from "react-router-hash-link";
 const ChallengeTopicDetailsPage = () => {
   const { topic } = useParams<{ topic: string }>();
   const { t } = useTranslation();
-
+ 
   const [challengeList, setChallengeList] = useState<Array<IChallenge>>([]);
   const [topicList, setTopicList] = useState<{ topic_id: string; topic_name: string }[]>([]);
   const [isChallengesLoaded, setIsChallengesLoaded] = useState(false);
   const [isTopicsLoaded, setIsTopicsLoaded] = useState(false);
-  
+
 
   // Fetch topics
   useEffect(() => {
     const fetchTopics = async () => {
       try {
-        const response = await ChallengeService.getListOfTopic();
+        const response = await ChallengeService.getChallengeTopics();
         if (response?.data.success && Array.isArray(response.data.data)) {
           setTopicList(response.data.data);
         } else {
@@ -36,6 +36,7 @@ const ChallengeTopicDetailsPage = () => {
     };
     fetchTopics();
   }, []);
+  
 
   // Fetch challenges by category
   useEffect(() => {
@@ -62,8 +63,8 @@ const ChallengeTopicDetailsPage = () => {
   return (
     <Box sx={{ height: "90vh" }}>
       <Grid2 container sx={{ height: "100%", width: "100%" }}>
-        
-       
+
+
         <Grid2 item sx={{ py: 2, backgroundColor: "#55b3ed", zIndex: 0, width: 300, height: "100%" }}>
           <List sx={{ listStyleType: "disc", textAlign: "center" }}>
             {isTopicsLoaded ? (
@@ -78,7 +79,7 @@ const ChallengeTopicDetailsPage = () => {
                       "&:hover": { backgroundColor: "#FF5733" },
                     }}
                   >
-                    <HashLink to={`#${topic.topic_id}-${topic.topic_name}`} style={{ fontSize: "1rem" }}>
+                    <HashLink to={`/challenges/${topic.topic_name}`} style={{ fontSize: "1rem" }}>
                       {topic.topic_name}
                     </HashLink>
                   </Box>
@@ -92,7 +93,7 @@ const ChallengeTopicDetailsPage = () => {
           </List>
         </Grid2>
 
-       
+
         <Grid2 item xs sx={{ p: 2 }}>
           {isChallengesLoaded ? (
             <Grid2 container spacing={3}>
@@ -114,3 +115,5 @@ const ChallengeTopicDetailsPage = () => {
 };
 
 export default ChallengeTopicDetailsPage;
+
+

@@ -4,13 +4,14 @@ export interface IChallenge {
   category: string;
   description: string;
   max_attempts: number;
+  connection_info: string | null;
   next_id: number | null;
   requirements: string | null;
   state: string;
   time_limit: number | null;
   type: string;
   value: number;
-  require_deploy: number;
+  require_deploy: boolean;
 }
 
 export interface IMultipleChoiceChallenge extends IChallenge {
