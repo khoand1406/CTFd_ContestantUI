@@ -1,22 +1,24 @@
 import TopicBlockComponent from "@/components/TopicBlockComponent";
-import { ROUTE_CHALLENGES } from "@/constants/routes";
+
 import { ChallengeService } from "@/services/challenges.service";
 import {
   Box,
   CircularProgress,
   Fade,
   Grid2,
+  Grow,
   Slide,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link as RouterLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const ChallengeTopicsPage = () => {
-  const [topics, setTopics] = useState<{ topic_name: string }[]>([]);
+  const [topics, setTopics] = useState<{ topic_name: string; challenge_count: number }[]>([]);
   const { t } = useTranslation();
   const [isTopicsLoaded, setTopicsLoaded] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchTopics = async () => {
@@ -38,6 +40,12 @@ const ChallengeTopicsPage = () => {
     fetchTopics();
   }, []);
 
+  
+
+  function handleTopicClick(topic: { topic_name: string; }): void {
+    navigate(`/challenges/${topic.topic_name}`);
+  }
+
   return (
     <Box>
       <Typography align="center" variant="h2" sx={{ m: 2, fontWeight: "bold" }}>
@@ -48,18 +56,22 @@ const ChallengeTopicsPage = () => {
           <div>
             <Fade in={true} timeout={1500}>
               <Box sx={{ p: 4, zIndex: 0 }}>
-                <Grid2 container spacing={2}>
-                  {topics.map((topic) => (
-                    <Grid2
-                      key={topic.topic_name}
-                      component={RouterLink}
-                      to={`${ROUTE_CHALLENGES}/${topic.topic_name}`}
-                      size={{ sm: 12, md: 4 }}
-                    >
-                      <TopicBlockComponent topicName={topic.topic_name} />
-                    </Grid2>
-                  ))}
-                </Grid2>
+              <Grid2 container spacing={3}>
+                {topics.map((topic) => (
+                <Grow key={topic.topic_name} in={true} timeout={300}>
+                  <Grid2 component="div" size= {{xs: 12, sm: 6, md: 4, lg: 3}} >
+                    <TopicBlockComponent
+                      topicName={topic.topic_name}
+                        
+                        questions={topic.challenge_count}
+                        onClick={() => handleTopicClick(topic)}
+                        
+                    />
+                  </Grid2>
+                </Grow>
+           ))}
+              </Grid2>
+
               </Box>
             </Fade>
           </div>

@@ -6,17 +6,17 @@ import {
   Alert,
   Box,
   Button,
-  CircularProgress, Grid,
+  CircularProgress,
+  Grid2,
   TextField,
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const ChallengeDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const challengeId = id ? parseInt(id, 10) : undefined;
-  const navigate = useNavigate();
 
   const [challenge, setChallenge] = useState<IChallenge | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -66,7 +66,7 @@ const ChallengeDetailsPage = () => {
   // Fetch challenge details
 
   const [remainingTime, setRemainingTime] = useState<number>(0);
-  const [isTimerActive, setIsTimerActive] = useState<boolean>(false);
+ 
 
 
   //count-down logic
@@ -210,28 +210,36 @@ const ChallengeDetailsPage = () => {
           {wsMessage}  {/* Display WebSocket message */}
         </Alert>
       )}
-      {challenge ? (
-        <>
-          <Typography variant="h4" component="h1" gutterBottom>
-            {challenge.name}
-          </Typography>
-          <Typography variant="body1" paragraph>
-            {challenge.description + "         " + (challenge.connection_info ?? "") || ""}
-          </Typography>
-          {challenge.require_deploy && (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleStartInstance}
-              sx={{ mt: 3 }}
-              disabled={isStartingInstance}
-            >
-              {isStartingInstance ? "Starting..." : "Start Challenge"}
-            </Button>
-          )}
-
-          {/* Flag Submission Section */}
-          <Box sx={{ mt: 4 }}>
+      <Box sx={{ p: 4, maxWidth: 1500, ml: 2, mr: 4 }}>
+        {challenge ? (
+          <Grid2 container spacing={4}>
+          {/* Challenge Details Section (8 columns) */}
+          <Grid2 component="div" size={{ xs: 12, md: 8 }}>
+            <Typography variant="h4" component="h1" gutterBottom>
+              {challenge.name}
+            </Typography>
+            <Typography variant="h6" color="secondary">
+              Time Remaining: {remainingTime} seconds
+            </Typography>
+            <Box 
+              display="flex" 
+               
+             
+              sx={{ height: '100%' }}
+            > 
+            <Typography 
+             variant="body2" 
+            color="text.secondary" 
+            mb={2}
+            
+            > 
+            {challenge.description} 
+          </Typography> 
+      </Box>
+          </Grid2>
+        
+          {/* Flag Submission Section (4 columns) */}
+          <Grid2 component="div" size={{ xs: 12, md: 4 }}>
             <TextField
               label="Enter Flag"
               variant="outlined"
@@ -246,6 +254,7 @@ const ChallengeDetailsPage = () => {
               onClick={handleSubmitFlag}
               disabled={isSubmittingFlag || !flag}
               fullWidth
+              sx={{ mb: 2 }}
             >
               {isSubmittingFlag ? "Submitting..." : "Submit Flag"}
             </Button>
@@ -254,11 +263,24 @@ const ChallengeDetailsPage = () => {
                 {submissionError}
               </Alert>
             )}
-          </Box>
-        </>
+            {challenge.require_deploy && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleStartInstance}
+                fullWidth
+                disabled={isStartingInstance}
+                sx={{ mt: 3 }}
+              >
+                {isStartingInstance ? "Starting..." : "Start Instance"}
+              </Button>
+            )}
+          </Grid2>
+        </Grid2>
       ) : (
         <Typography variant="h5">Challenge not found</Typography>
       )}
+    </Box>
     </Box>
   );
 };
