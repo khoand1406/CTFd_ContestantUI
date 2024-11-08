@@ -28,6 +28,7 @@ const ChallengeDetailsPage = () => {
   const [flag, setFlag] = useState("");
   const [isSubmittingFlag, setIsSubmittingFlag] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [selectedHint, setSelectedHint] = useState<{ id: number; content: string } | null>(null);
   const [wsMessage, setWsMessage] = useState<string | null>(null); // WebSocket message state
 
 
@@ -66,8 +67,7 @@ const ChallengeDetailsPage = () => {
   // Fetch challenge details
 
   const [remainingTime, setRemainingTime] = useState<number>(0);
- 
-
+  
 
   //count-down logic
   useEffect(() => {
@@ -123,7 +123,6 @@ const ChallengeDetailsPage = () => {
   const handleStartInstance = async () => {
     setIsStartingInstance(true);
 
-
     try {
       if (!challengeId) {
         setError("Invalid challenge ID.");
@@ -153,6 +152,61 @@ const ChallengeDetailsPage = () => {
       setIsStartingInstance(false);
     }
   };
+
+  const handleInstanceToggle = async () => {
+    if (!challengeId) {
+      setError("Invalid challenge ID.");
+      return;
+    }
+
+    if (isStartingInstance) {
+      // Stop Challenge
+      try {
+        const response = await ChallengeService.stopChallenge({
+          challenge_id: challengeId,
+          generatedToken: token.generatedToken,
+        });
+        if (response?.data.success) {
+          setIsStartingInstance(false);
+          setRemainingTime(0);
+        } else {
+          setError("Failed to stop the instance.");
+        }
+      } catch (error) {
+        setError("Error stopping instance.");
+        console.error("Error stopping instance:", error);
+      }
+    } else {
+      // Start Challenge
+      try {
+        const response = await ChallengeService.startChallenge({
+          challenge_id: challengeId,
+          generatedToken: token.generatedToken,
+        });
+        if (response?.data.success) {
+          setIsStartingInstance(true);
+          const timeRemainData = response.data.time_remain;
+          if (Array.isArray(timeRemainData) && timeRemainData[0]?.time_remaining != null) {
+            setRemainingTime(timeRemainData[0].time_remaining);
+          } else {
+            setRemainingTime(0); // Fallback if time_remaining is missing
+          }
+          if (challenge) {
+            setChallenge({
+              ...challenge,
+              connection_info: response.data.connection_info, // Store connection info
+            });
+          }
+        } else {
+          setError("Failed to start the instance.");
+        }
+      } catch (error) {
+        setError("Error starting instance.");
+        console.error("Error starting instance:", error);
+      }
+    }
+  };
+
 
   const handleSubmitFlag = async () => {
     setIsSubmittingFlag(true);
@@ -192,12 +246,18 @@ const ChallengeDetailsPage = () => {
     );
   }
 
+  function handleHintClick(hint: { id: number; content: string; }): void {
+    setSelectedHint(hint)
+    console.log(hint.id)
+    console.log(hint.content)
+  }
   return (
     <Box
       sx={{
         p: 2,
-        maxWidth: "80%",
+        maxWidth: "100%",
         margin: "auto",
+        mx: 2
       }}
     >
       {error && (
@@ -210,7 +270,7 @@ const ChallengeDetailsPage = () => {
           {wsMessage}  {/* Display WebSocket message */}
         </Alert>
       )}
-      <Box sx={{ p: 4, maxWidth: 1500, ml: 2, mr: 4 }}>
+      <Box sx={{ p: 6, maxWidth: 1500 }}>
         {challenge ? (
           <Grid2 container spacing={4}>
           {/* Challenge Details Section (8 columns) */}
@@ -218,20 +278,17 @@ const ChallengeDetailsPage = () => {
             <Typography variant="h4" component="h1" gutterBottom>
               {challenge.name}
             </Typography>
-            <Typography variant="h6" color="secondary">
+            <Typography variant="h6" color="primary">
               Time Remaining: {remainingTime} seconds
             </Typography>
             <Box 
               display="flex" 
-               
-             
               sx={{ height: '100%' }}
             > 
             <Typography 
-             variant="body2" 
+            variant="body2" 
             color="text.secondary" 
             mb={2}
-            
             > 
             {challenge.description} 
           </Typography> 
@@ -239,7 +296,24 @@ const ChallengeDetailsPage = () => {
           </Grid2>
         
           {/* Flag Submission Section (4 columns) */}
-          <Grid2 component="div" size={{ xs: 12, md: 4 }}>
+          <Grid2 component="div" size={{ xs: 12, md: 4 } }>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
+            {challenge?.hints?.map((hint) => (
+              <Button
+                key={hint.id}
+                variant="outlined"
+                onClick={() => handleHintClick(hint)}
+                sx={{ minWidth: '100px', borderRadius: 1 }}
+              >
+                Hint {hint.id}
+              </Button>
+            ))}
+          </Box>
+          {selectedHint && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              {selectedHint.content}
+            </Alert>
+          )}
             <TextField
               label="Enter Flag"
               variant="outlined"
@@ -267,12 +341,12 @@ const ChallengeDetailsPage = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={handleStartInstance}
+                onClick={handleInstanceToggle}
                 fullWidth
-                disabled={isStartingInstance}
+                
                 sx={{ mt: 3 }}
               >
-                {isStartingInstance ? "Starting..." : "Start Instance"}
+                {isStartingInstance ? "Stop Challenge" : "Start Instance"}
               </Button>
             )}
           </Grid2>
