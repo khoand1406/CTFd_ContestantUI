@@ -17,6 +17,7 @@ export const API_CHALLENGE_GET_BY_CATEGORY = "/challenge/list_challenge/"; // ge
 export const API_CHALLENGE_ATTEMPT = "/v1/challenges/attempt"; // post
 export const API_CHALLENGE_LIST_TOPIC= "/get-listtopic" //get
 export const API_CHALLENGE_DETAILS= "/challenge"
+export const API_CHALLENGE_STOP= "/challenge/stop"
 
 // TICKET RELATED
 export const API_TICKET_SUBMIT = "/ticket"; // post

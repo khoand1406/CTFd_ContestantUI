@@ -12,6 +12,8 @@ export interface IChallenge {
   type: string;
   value: number;
   require_deploy: boolean;
+  hints: { id: number; content: string }[];
+  files: {id: number; location: string; sha1sum: string; type: string}
 }
 
 export interface IMultipleChoiceChallenge extends IChallenge {
@@ -38,6 +40,11 @@ export interface IChallengeStartRequest {
   challenge_id: number,
   generatedToken: string
 
+}
+
+export interface IChallengeStopRequest{
+  challenge_id: number,
+  generatedToken: string
 }
 
 export interface IChallengeByCategoryRequest {
