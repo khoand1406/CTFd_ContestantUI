@@ -50,13 +50,7 @@ const ChallengeTopicDetailsPage = () => {
     fetchChallenges();
   }, [topic]);
 
-  const filteredChallenge= challengeList.filter(challenge=> {
-    const matchedSearch= challenge.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchedType= selectedType === "ALL" || challenge.type== selectedType;
-    const matchesSolved = !showSolved || challenge.state;
-    return matchedSearch && matchedType && matchesSolved;
-
-  })
+  
   return (
     <Box sx={{ height: "90vh" }}>
 

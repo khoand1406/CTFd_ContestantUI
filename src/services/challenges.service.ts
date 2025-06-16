@@ -1,13 +1,16 @@
 import {
+  API_CHALLEGE_START,
   API_CHALLENGE_ATTEMPT,
   API_CHALLENGE_DETAILS,
   API_CHALLENGE_GET_BY_CATEGORY,
   API_CHALLENGE_GET_LIST,
   API_CHALLENGE_GET_TOPICS,
   API_CHALLENGE_LIST_TOPIC,
-  API_CHALLENGE_START,
   API_CHALLENGE_STOP,
   API_ENV,
+  API_FILE_DOWLOAD,
+  APi_GET_CHALLENGES_HINTS,
+  API_UNLOCK_HINTS,
 } from "@/constants/endpoints";
 import { IChallengeByCategoryRequest, IChallengeListRequest, IChallengeStartRequest, IChallengeStopRequest } from "@/interfaces/challenges";
 import { BaseService } from "@/services/base.service";
@@ -89,7 +92,7 @@ export class ChallengeService extends BaseService {
   static async startChallenge(req: IChallengeStartRequest) {
     try {
       const response = await this.request({ auth: true }).post(
-        API_ENV.MAIN + API_CHALLENGE_START,
+        API_ENV.MAIN + API_CHALLEGE_START,
         req
       );
       return response;
@@ -116,6 +119,40 @@ export class ChallengeService extends BaseService {
       return response;
     }catch(error){
       return (error as AxiosError).response;
+    }
+  }
+  static async fetchhintDetails(hintId: number){
+    try {
+      const response= await this.request({auth: true}).get(
+        `${APi_GET_CHALLENGES_HINTS}/${hintId}`
+      )
+      return response
+    } catch (error) {
+      return (error as AxiosError).response;
+    }
+  }
+  static async unlockHint(hintId: number){
+    try {
+      const response= await this.request({auth:true}).post(
+        API_UNLOCK_HINTS, 
+        {
+          type: "hints",
+          target: hintId
+        }
+      )
+      return response
+    } catch (error) {
+      return (error as AxiosError).response;
+    }
+  }
+  static async getFiles(){
+    try {
+      const response= await this.request({auth:true}).get(
+        API_FILE_DOWLOAD
+      )
+      return response
+    } catch (error) {
+      return (error as AxiosError).response
     }
   }
 }
