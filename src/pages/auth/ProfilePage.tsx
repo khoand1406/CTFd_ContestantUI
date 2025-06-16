@@ -34,7 +34,7 @@ const ProfilePage: React.FC = () => {
     )) as AxiosResponse;
 
     if (response.status === API_R_200) {
-      const data = response!.data;
+     
       console.log("change pwd success!");
     } else {
       setChangePwdError(true);

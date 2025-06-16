@@ -29,7 +29,7 @@ const ChallengeDetailsPage = () => {
   const [isSubmittingFlag, setIsSubmittingFlag] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [selectedHint, setSelectedHint] = useState<{ id: number; content: string } | null>(null);
-  const [wsMessage, setWsMessage] = useState<string | null>(null); // WebSocket message state
+  const [wsMessage, ] = useState<string | null>(null); // WebSocket message state
 
 
   useEffect(() => {
@@ -119,39 +119,8 @@ const ChallengeDetailsPage = () => {
   }, [challengeId]);
 
 
-  // nut start button event click
-  const handleStartInstance = async () => {
-    setIsStartingInstance(true);
-
-    try {
-      if (!challengeId) {
-        setError("Invalid challenge ID.");
-        setIsStartingInstance(false);
-        return;
-      }
-
-      const response = await ChallengeService.startChallenge({
-        challenge_id: challengeId,
-        generatedToken: token.generatedToken,
-      });
-
-      if (response?.data.success) {
-        if (challenge) {
-          setChallenge({
-            ...challenge,
-            connection_info: response.data.connection_info, // Thêm connection_info vào challenge
-          });
-        }
-      } else {
-        setError("Failed to start the instance.");
-      }
-    } catch (error) {
-      setError("Error starting instance.");
-      console.error("Error starting instance:", error);
-    } finally {
-      setIsStartingInstance(false);
-    }
-  };
+ 
+  
 
   const handleInstanceToggle = async () => {
     if (!challengeId) {

@@ -1,8 +1,8 @@
 import FooterComponent from "@/components/FooterComponent";
 import HeaderComponent from "@/components/HeaderComponent";
-import NavBarComponent from "@/components/NavBarComponent";
+
 import { Box } from "@mui/material";
-import React from "react";
+
 import { Outlet } from "react-router-dom";
 
 const MainLayout = () => {

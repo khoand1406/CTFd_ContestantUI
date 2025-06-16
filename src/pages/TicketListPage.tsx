@@ -1,6 +1,6 @@
 import { ROUTE_TICKET_SUBMIT, ROUTE_TICKET_DETAIL } from "@/constants/routes";
 import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
-import React from "react";
+
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 const TicketListPage = () => {

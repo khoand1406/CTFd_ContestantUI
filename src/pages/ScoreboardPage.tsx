@@ -3,7 +3,7 @@ import {
   ReactEChartsProps,
 } from "@/components/charts/ReactEChartsComponent";
 import { Box, Typography } from "@mui/material";
-import React from "react";
+
 import { useTranslation } from "react-i18next";
 
 const ScoreboardPage = () => {

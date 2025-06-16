@@ -2,7 +2,7 @@ import { CommonUtils } from "@/utils/common.utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   AppBar,
-  Avatar,
+ 
   Box,
   Button,
   Container,
@@ -10,7 +10,7 @@ import {
   Menu,
   MenuItem,
   Toolbar,
-  Tooltip,
+  
   Typography,
 } from "@mui/material";
 import React, { useState } from "react";
@@ -29,7 +29,7 @@ import {
 const NavBarComponent: React.FC = () => {
   const { t } = useTranslation();
 
-  const [user, setUser] = useState<boolean>(CommonUtils.isLoggedIn());
+  const [user, ] = useState<boolean>(CommonUtils.isLoggedIn());
 
   interface PageLink {
     pageName: string;

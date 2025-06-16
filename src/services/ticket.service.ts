@@ -1,6 +1,6 @@
-import { BaseService } from "@/services/base.service";
+import { API_DETAIL_TICKET, API_ENV, API_LIST_TICKET, API_TICKET_CREATE_BY_USER, } from "@/constants/endpoints";
 import { ITicketSubmit } from "@/interfaces/ticket";
-import { API_ENV, API_TICKET_SUBMIT, API_TICKET_LIST, API_TICKET_DETAIL } from "@/constants/endpoints";
+import { BaseService } from "@/services/base.service";
 import { AxiosError } from "axios";
 
 
@@ -8,7 +8,7 @@ export class TicketService extends BaseService {
     static async submitTicket(ticket: ITicketSubmit) {
         try {
             const response = await this.request({ auth: true }).post(
-                API_ENV.MAIN + API_TICKET_SUBMIT,
+                API_ENV.MAIN + API_TICKET_CREATE_BY_USER,
                 ticket
             );
             return response;
@@ -20,7 +20,7 @@ export class TicketService extends BaseService {
     static async getTickets() {
         try {
             const response = await this.request({ auth: true }).get(
-                API_ENV.MAIN + API_TICKET_LIST
+                API_ENV.MAIN + API_LIST_TICKET
             );
             return response;
         } catch (error) {
@@ -31,7 +31,7 @@ export class TicketService extends BaseService {
     static async getTicketDetail(id: number) {
         try {
             const response = await this.request({ auth: true }).get(
-                API_ENV.MAIN + API_TICKET_DETAIL + id
+                API_ENV.MAIN + API_DETAIL_TICKET + id
             );
             return response;
         } catch (error) {
