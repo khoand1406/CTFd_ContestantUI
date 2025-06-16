@@ -7,6 +7,7 @@ import {
   ROUTE_LOGIN,
   ROUTE_LOGOUT,
   ROUTE_PROFILE,
+  ROUTE_REGISTER,
   ROUTE_ROOT,
   ROUTE_SCOREBOARD,
   ROUTE_TICKET_DETAIL,
@@ -17,6 +18,7 @@ import MainLayout from "./layouts/MainLayout";
 import LoginPage from "./pages/auth/LoginPage";
 import LogoutPage from "./pages/auth/LogoutPage";
 import ProfilePage from "./pages/auth/ProfilePage";
+import RegistrationForm from "./pages/auth/RegisterForm";
 import ChallengeTopicDetailsPage from "./pages/ChallengeTopicDetailsPage";
 import ChallengeTopicsPage from "./pages/ChallengeTopicsPage";
 import HomePage from "./pages/HomePage";
@@ -64,6 +66,7 @@ function App() {
           />
           <Route path={ROUTE_SCOREBOARD} element={<ScoreboardPage />} />
           <Route path={ROUTE_LOGOUT} element={<LogoutPage />}></Route>
+          <Route path= {ROUTE_REGISTER} element= {<RegistrationForm></RegistrationForm>}></Route>
         </Route>
         {/* 👈 Renders at /app/ */}
       </Routes>

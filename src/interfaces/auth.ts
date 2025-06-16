@@ -17,3 +17,9 @@ export interface IUserChangePasswordRequest {
   current_password: string;
   new_password: string;
 }
+
+export interface IUserRegisterRequest{
+  username:string;
+  email:string;
+  password:string;
+}

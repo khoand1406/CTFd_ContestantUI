@@ -1,13 +1,15 @@
 import {
-  IUserChangePasswordRequest,
-  IUserLoginRequest,
-} from "@/interfaces/auth";
-import { BaseService } from "@/services/base.service";
-import {
   API_ENV,
   API_USER_CHANGE_PASSWORD,
   API_USER_LOG_IN,
+  REGISTER_CONTESTANT,
 } from "@/constants/endpoints";
+import {
+  IUserChangePasswordRequest,
+  IUserLoginRequest,
+  IUserRegisterRequest,
+} from "@/interfaces/auth";
+import { BaseService } from "@/services/base.service";
 import { AxiosError } from "axios";
 
 export class AuthService extends BaseService {
@@ -31,6 +33,17 @@ export class AuthService extends BaseService {
       );
       return response;
     } catch (error) {
+      return (error as AxiosError).response;
+    }
+  }
+  static async register(data:IUserRegisterRequest){
+    try{
+      const response= await this.request({auth:false}).post(
+        API_ENV.MAIN+ REGISTER_CONTESTANT,
+        data
+      );
+      return response;
+    }catch(error){
       return (error as AxiosError).response;
     }
   }
