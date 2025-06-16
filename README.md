@@ -1,8 +1,10 @@
 # CTFD CONTESTANT USER INTERFACES
 
-The contestant UI in CTFd is the primary interface that players interact with during a Capture The Flag (CTF) competition. It allows contestants to:
-# The project had been transfer to other third-party to continue developing (both server and UI), so in this project, those api call are unavailable. But I still have some demo picture for you to evaluate.
 
+Note: The project had been transfer to other third-party to continue developing (both server and UI), so in this project, those api call are unavailable
+But I still have some demo picture for you to evaluate.
+
+The contestant UI in CTFd is the primary interface that players interact with during a Capture The Flag (CTF) competition. It allows contestants to:
   + Log in and manage their account
 
   + View the list of challenges
